@@ -4,11 +4,11 @@ from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 
 
-class wordEmbedding:
-### Word embedding class used to convert Glove .txt file type to w2v file type and perform other operations helpful for word embedding use
+class WordEmbedding:
+
     def __init__(self, fp) -> None:
         glove_file = datapath(fp)
-        word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt")
+        word2vec_glove_file = get_tmpfile("w2v_gnews_super_small.txt")
         glove2word2vec(glove_file, word2vec_glove_file)
         self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
     
@@ -17,7 +17,8 @@ class wordEmbedding:
         most_similar_key, similarity = result[0]  # look at the first match
         return (most_similar_key, similarity)
 
-    
+    def getItem(self, key):
+        return self.model.__getitem__(key)
     
     def generateNSimilar(self, input_words, num_sim):
         ## Generate a list of n similar words to a list of input words
@@ -52,17 +53,9 @@ class wordEmbedding:
         
 
 def main():
-    fp = '/Users/darrylyork3/Desktop/Comps22/homemakers/w2v_gnews_small.txt'
-    we = wordEmbedding(fp)
-    print('generateSimilar',we.generateSimilar("man"))
-    print('generateNSimilar', we.generateNSimilar("man, woman", 3))
-    
-    #Generate closest word and its similarities
-    print(we.generateSimilar("man"))
-    #Access a token's vector
-    print(we.model["man"]) 
-    #Access list of tokens in our word embedding
-    #print(we.model.index_to_key)
-
+    fp = '/Users/swapnavarma/Desktop/cs-labs/comps/homemakers/w2v_gnews_small.txt'
+    we = WordEmbedding(fp)
+    # print(we.generateSimilar("man"))
+    # print(we.getItem("man"))
         
 main()
