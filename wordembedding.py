@@ -12,11 +12,12 @@ class wordEmbedding:
         glove2word2vec(glove_file, word2vec_glove_file)
         self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
     
-    def generateSimilar(self, sampleWord):
-        ## Generate the most similar word to a sampleWord
+    def generateOneSimilar(self, sampleWord):
         result = self.model.similar_by_word(sampleWord)
         most_similar_key, similarity = result[0]  # look at the first match
         return (most_similar_key, similarity)
+
+    
     
     def generateNSimilar(self, input_words, num_sim):
         ## Generate a list of n similar words to a list of input words
@@ -55,6 +56,13 @@ def main():
     we = wordEmbedding(fp)
     print('generateSimilar',we.generateSimilar("man"))
     print('generateNSimilar', we.generateNSimilar("man, woman", 3))
+    
+    #Generate closest word and its similarities
+    print(we.generateSimilar("man"))
+    #Access a token's vector
+    print(we.model["man"]) 
+    #Access list of tokens in our word embedding
+    #print(we.model.index_to_key)
 
         
 main()
