@@ -30,8 +30,8 @@ c = 1.0
 clf = svm.LinearSVC(C = c)
 clf.fit(X, y)
 
-with open('gender_specific_predict.txt', "w") as gs_reader:
-    with open('gender_neutral_predict.txt', "w") as gn_reader:
+with open('./data/gender_specific_predict.txt', "w") as gs_reader:
+    with open('./data/gender_neutral_predict.txt', "w") as gn_reader:
         for word in we.model.index_to_key:
             test_value = np.array(we.getItem(word)).reshape((1, -1))
             y_pred = clf.predict(test_value)
