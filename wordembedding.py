@@ -17,8 +17,6 @@ class wordEmbedding:
         most_similar_key, similarity = result[0]  # look at the first match
         return (most_similar_key, similarity)
 
-    
-    
     def generateNSimilar(self, input_words, num_sim):
         ## Generate a list of n similar words to a list of input words
         def append_list(sim_words, words):
@@ -31,7 +29,7 @@ class wordEmbedding:
                 sim_words_tuple = tuple(sim_words_list)
                 list_of_words.append(sim_words_tuple)
 
-            print("list of words", list_of_words)    
+            # print("list of words", list_of_words)    
             return list_of_words
         
         user_input = [word.strip() for word in input_words.split(',')]
@@ -52,17 +50,17 @@ class wordEmbedding:
         
 
 def main():
-    fp = '/Users/darrylyork3/Desktop/Comps22/homemakers/w2v_gnews_small.txt'
+    fp = '/Users/darrylyork3/Desktop/Comps22/w2vData/w2v_gnews_small.txt'
     we = wordEmbedding(fp)
-    print('generateSimilar',we.generateSimilar("man"))
-    print('generateNSimilar', we.generateNSimilar("man, woman", 3))
+    # print('generateSimilar',we.generateSimilar("man"))
+    # print('generateNSimilar', we.generateNSimilar("man, woman", 3))
     
     #Generate closest word and its similarities
-    print(we.generateSimilar("man"))
+    # print(we.generateSimilar("man"))
     #Access a token's vector
-    print(we.model["man"]) 
+    # print(we.model["man"]) 
     #Access list of tokens in our word embedding
     #print(we.model.index_to_key)
 
         
-main()
+# main()
