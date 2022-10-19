@@ -1,5 +1,5 @@
 from random import sample
-from gensim.models import KeyedVectors # https://radimrehurek.com/gensim/models/keyedvectors.html?highlight=keyedvectors#
+from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 from sklearn.decomposition import PCA
@@ -7,15 +7,15 @@ import numpy as np
 from config import fp
 
 
-class WordEmbedding:
+class wordEmbedding:
 
-    def __init__(self, fp) -> None:
+    def __init__(self, fp):# -> None:
         glove_file = datapath(fp)
-        word2vec_glove_file = get_tmpfile("w2v_gnews_super_small.txt")
-        glove2word2vec(glove_file, word2vec_glove_file)
+        word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
+        glove2word2vec(glove_file, word2vec_glove_file) 
         self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
     
-    def generateOneSimilar(self, sampleWord):
+    def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
         most_similar_key, similarity = result[0]  # look at the first match
         return (most_similar_key, similarity)

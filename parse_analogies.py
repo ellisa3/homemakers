@@ -42,3 +42,15 @@ with open('analogies.txt', 'r') as f:
     print(j)
 f.close()
     
+
+#     actress
+# nurse
+# homemaker
+# adorable
+# aunt
+# aunts
+# babe
+# beautiful
+# beauty
+# homemaker
+
