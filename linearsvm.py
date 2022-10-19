@@ -2,16 +2,15 @@ import numpy as np
 from sklearn import svm
 import json
 import wordembedding
+from config import fp_subset, fp
 
 gender_seed_words = set()
 with open('./data/gender_seed_small.json', "r") as f:
     gender_seed_words = json.load(f)
 
 # file path of the embedding subset
-fp_subset = '/Users/swapnavarma/Desktop/cs-labs/comps/homemakers/data/w2v_gnews_super_small.txt'
 we_subset = wordembedding.WordEmbedding(fp_subset)
 # file path of the full embedding
-fp = '/Users/swapnavarma/Desktop/cs-labs/comps/homemakers/data/w2v_gnews_small.txt'
 we = wordembedding.WordEmbedding(fp)
 
 X = []
