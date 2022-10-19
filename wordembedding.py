@@ -88,11 +88,11 @@ class wordEmbedding:
 
 
 def main():
-    we = WordEmbedding(fp)
+    we = wordEmbedding(fp)
     print(f"Distance between woman and homemaker is",we.model.distance("woman", "homemaker"))
     #with open("data/gender_specific_full.txt") as genderfile:
     #    gendered = genderfile.read()
-    we.neutralize([("man", "woman"), ("he", "she"), ("male", "female")], ["he", "she"])
+    we.neutralize()
     print("NEUTRALIZED")
     print(f"Distance between woman and homemaker is",we.model.distance("woman", "homemaker"))
     print("Done")
