@@ -4,7 +4,7 @@ from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 
 
-class wordEmbedding:
+class WordEmbedding:
 
     def __init__(self, fp):# -> None:
         glove_file = datapath(fp)
@@ -20,16 +20,16 @@ class wordEmbedding:
     
     
 
-def main():
-    fp = '/mnt/c/CS/homemakers/data/w2v_gnews_small.txt'
-    we = wordEmbedding(fp)
-    print("in wordembedding.py")
-    #Generate closest word and its similarities
-    print(we.generateOneSimilar("man"))
+# def main():
+    # fp = '/mnt/c/CS/homemakers/data/w2v_gnews_small.txt'
+    # we = wordEmbedding(fp)
+    # print("in wordembedding.py")
+    # #Generate closest word and its similarities
+    # print(we.generateOneSimilar("man"))
     #Access a token's vector
     #print(we.model["man"]) 
     #Access list of tokens in our word embedding
     #print(we.model.index_to_key)
 
         
-main()
+# main()

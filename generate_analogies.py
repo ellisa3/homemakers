@@ -12,7 +12,7 @@ from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 
-class wordEmbedding:
+class WordEmbedding:
 
     seedSimilarity = 0
 
@@ -61,7 +61,7 @@ class wordEmbedding:
         
 def main():
     fp = '/mnt/c/CS/homemakers/data/w2v_gnews_small.txt'
-    we = wordEmbedding(fp)
+    we = WordEmbedding(fp)
     print(we.findSeedSimilarity())
 
     analogies = we.generateAnalogies('/mnt/c/CS/homemakers/data/small_x.txt')
