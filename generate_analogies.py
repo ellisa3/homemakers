@@ -6,28 +6,69 @@
 
 #pseudocode
 
-# find cosine similarity between she, he
-# she_he_similarity = most_similar(positive = [she], topn=10)      //solid guess that given she, he will be within top 10 most similar words
-# for every word in x
-    # cosine_similarities = []
-    # cosine_similarities = most_similar(positive = [x], topn=None) //returns all the words in the vocab & their cosine similarity relative to x
 
-    # curr_difference = 0
-    # min_difference = 10
-    # min_theta = 0                                             //not sure what type this boi is
-    # for theta in cosine_similarities
-        # curr_difference = abs_val(she_he_similarity - theta)  //want to find how similar the distance values are to each other
-        # if curr_difference < min_difference
-            # min_difference = curr_difference                  
-            # min_theta = theta                                 //keep track of the [word, degree] that minimizes that difference
-
-    #return min_theta
-
-from random import sample
+from random import sample, seed
 from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 
-    # return cosine similarity between she, he
+class wordEmbedding:
 
+    seedSimilarity = 0
+
+    def __init__(self, fp):# -> None:
+        glove_file = datapath(fp)
+        word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
+        glove2word2vec(glove_file, word2vec_glove_file) 
+        self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
         
+
+    #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
+    def findSeedSimilarity(self):
+        a = "he"
+        b = "she"
+        most_similar = self.model.similar_by_word(a)
+        for similar_word in most_similar:
+            if similar_word[0] == b:
+                self.seedSimilarity = similar_word[1]
+                return self.seedSimilarity
+        return -1
+
+    #either call it for each x OR call it once and runs on list of x's, latter more efficient    
+    def generateAnalogies(self, filename):
+        analogies = []
+        with open(filename, 'r') as f:
+            words = f.readlines()
+            j = 0
+            for x in words:
+                x = x.strip() #remiove \r\n 
+                cosine_similarities = self.model.similar_by_word(x, topn=10000)
+                curr_difference = 0
+                min_difference = 10
+                for word in cosine_similarities:
+                    #print(word)
+                    theta = word[1]
+                    #print(self.seedSimilarity)
+                    curr_difference = abs(self.seedSimilarity - theta)  #want to find how similar the distance values are to each other
+                    if curr_difference < min_difference:
+                        print(word)
+                        min_difference = curr_difference                  
+                        min_word = word                                 #keep track of the [word, degree] that minimizes that difference
+                analogy = (x, min_word[0], theta)                       #e.g., (homemakers, computer_programmer, 0.635)
+                analogies.append(analogy)                               #[(homemakers, computer_programmer, 0.635), (nurse, doctor, 0.610), ...]
+        f.close()
+        return analogies
+        
+def main():
+    fp = '/mnt/c/CS/homemakers/data/w2v_gnews_small.txt'
+    we = wordEmbedding(fp)
+    print(we.findSeedSimilarity())
+
+    analogies = we.generateAnalogies('/mnt/c/CS/homemakers/data/small_x.txt')
+    print(analogies)
+    # i = 0
+    # while (i < 8):
+    #     print(analogies[i])
+    #     i += 1
+
+main()

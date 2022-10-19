@@ -1,18 +1,18 @@
 from random import sample
-from gensim.models import KeyedVectors # https://radimrehurek.com/gensim/models/keyedvectors.html?highlight=keyedvectors#
+from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 
 
 class wordEmbedding:
-### Word embedding class used to convert Glove .txt file type to w2v file type and perform other operations helpful for word embedding use
-    def __init__(self, fp) -> None:
+
+    def __init__(self, fp):# -> None:
         glove_file = datapath(fp)
-        word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt")
-        glove2word2vec(glove_file, word2vec_glove_file)
+        word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
+        glove2word2vec(glove_file, word2vec_glove_file) 
         self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
     
-    def generateOneSimilar(self, sampleWord):
+    def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
         most_similar_key, similarity = result[0]  # look at the first match
         return (most_similar_key, similarity)
@@ -43,22 +43,16 @@ class wordEmbedding:
         # most_similar_keys = [word[0] for word in result_words]
         # similarity = [word[1] for word in result_words]
         # similar_to = [word[2] for word in result_words]
-        return result_words
-
-            
-
-        
-
-def main():
-    fp = '/Users/darrylyork3/Desktop/Comps22/w2vData/w2v_gnews_small.txt'
-    we = wordEmbedding(fp)
-    # print('generateSimilar',we.generateSimilar("man"))
-    # print('generateNSimilar', we.generateNSimilar("man, woman", 3))
+        return result_words    
     
+def main():
+    fp = '/mnt/c/CS/homemakers/data/w2v_gnews_small.txt'
+    we = wordEmbedding(fp)
+    print("in wordembedding.py")
     #Generate closest word and its similarities
-    # print(we.generateSimilar("man"))
+    print(we.generateOneSimilar("man"))
     #Access a token's vector
-    # print(we.model["man"]) 
+    #print(we.model["man"]) 
     #Access list of tokens in our word embedding
     #print(we.model.index_to_key)
 
