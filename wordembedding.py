@@ -4,6 +4,7 @@ from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 from sklearn.decomposition import PCA
 import numpy as np
+from config import fp
 
 
 class WordEmbedding:
@@ -87,7 +88,6 @@ class WordEmbedding:
 
 
 def main():
-    fp = '/Users/aldopolanco/homemakers/data/w2v_gnews_small.txt'
     we = WordEmbedding(fp)
     print(f"Distance between woman and homemaker is",we.model.distance("woman", "homemaker"))
     #with open("data/gender_specific_full.txt") as genderfile:
