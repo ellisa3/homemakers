@@ -17,10 +17,12 @@ class WordEmbedding:
     seedSimilarity = 0
 
     def __init__(self, fp):# -> None:
-        glove_file = datapath(fp)
-        word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
-        glove2word2vec(glove_file, word2vec_glove_file) 
-        self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
+        # glove_file = datapath(fp)
+        # word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
+        # glove2word2vec(glove_file, word2vec_glove_file) 
+        # self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
+        self.model = KeyedVectors.load_word2vec_format(fp, binary=True)
+        self.model.save_word2vec_format('/content/homemakers/data/GoogleNews-vectors-negative300.txt', binary=False)
         
 
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
@@ -60,15 +62,15 @@ class WordEmbedding:
         return analogies
         
 def main():
-    fp = '/mnt/c/CS/homemakers/data/w2v_gnews_small.txt'
+    fp = '/content/homemakers/data/GoogleNews-vectors-negative300.bin'
     we = WordEmbedding(fp)
     print(we.findSeedSimilarity())
 
     analogies = we.generateAnalogies('/mnt/c/CS/homemakers/data/small_x.txt')
     print(analogies)
-    # i = 0
-    # while (i < 8):
-    #     print(analogies[i])
-    #     i += 1
+    i = 0
+    while (i < 8):
+        print(analogies[i])
+        i += 1
 
 main()
