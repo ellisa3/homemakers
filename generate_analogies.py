@@ -5,7 +5,7 @@
 # y = [] #only those who pass the threshold
 
 #pseudocode
-
+# !git remote set-url origin https://ellisa3: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@github.com/ellisa3/homemakers.git
 
 from random import sample, seed
 from gensim.models import KeyedVectors
