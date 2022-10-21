@@ -68,11 +68,11 @@ class WordEmbedding:
         pca.fit(toFit)
         direction = pca.components_[0]
         for word in self.model.index_to_key:
-            if word in gendered:
+            if word.lower() in gendered:
                 continue
             else:
                 newvec = np.dot(self.model[word], direction) * direction
-                newvec = newvec/np.linalg.norm(newvec)
+                newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
                 self.model[word] = newvec
         return None
 
@@ -81,11 +81,13 @@ class WordEmbedding:
 
 def main():
     we = WordEmbedding(fp)
-    print(we.generateNSimilar("nurse", 5))
+    print(we.model.distance("woman", "homemaker"))
+    print(we.model.distance("man", "homemaker"))
     we.neutralize(["he", "she", "woman", "man"])
     print("NEUTRALIZED")
-    print(we.generateNSimilar("nurse", 5))
+    print(we.model.distance("woman", "homemaker"))
+    print(we.model.distance("man", "homemaker"))
     print("Done")
     
         
-# main()
+main()
