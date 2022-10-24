@@ -101,7 +101,6 @@ def format_plot_data(plot_data, input_words):
 # display_pca_scatterplot_3D(model, user_input, similar_word, labels, color_map)
 model = we('/Users/darrylyork3/Desktop/Comps22/w2vData/w2v_gnews_small.txt')
 
-input_words = 'she, he, female, male'
 sim_words = we.generateNSimilar(model, input_words, 2) # Work on this 
 
 plot_data = format_plot_data(sim_words, input_words)
