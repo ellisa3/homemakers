@@ -51,7 +51,7 @@ class WordEmbedding:
         # similar_to = [word[2] for word in result_words]
         return result_words
 
-    def neutralize(self, gendered):
+    def debias(self, gendered):
         #Find gender direction
         toFit = []
         for w1, w2 in self.definition_pairs:
@@ -74,16 +74,26 @@ class WordEmbedding:
                 newvec = np.dot(self.model[word], direction) * direction
                 newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
                 self.model[word] = newvec
+        # Equalize?
+        # for w1, w2 in self.definition_pairs:
+        #     if w1 not in self.model or w2 not in self.model:
+        #         continue
+        #     mu = (self.model[w1] + self.model[w1])/2
+        #     muproj = np.dot(mu, direction) * direction
+        #     v = mu - muproj
+        #     w1proj = np.dot(self.model[w1], direction) * direction
+        #     w2proj = np.dot(self.model[w2], direction) * direction
+        #     self.model[w1] = (v + (1 - np.linalg.norm(v)**2)**0.5) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj)
+        #     self.model[w2] = (v + (1 - np.linalg.norm(v)**2)**0.5) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj)
         return None
-
-            
-
+        
 
 def main():
     we = WordEmbedding(fp)
     print(we.model.distance("woman", "homemaker"))
     print(we.model.distance("man", "homemaker"))
-    we.neutralize(["he", "she", "woman", "man"])
+    we.debias(["he", "she", "woman", "man"])
+    
     print("NEUTRALIZED")
     print(we.model.distance("woman", "homemaker"))
     print(we.model.distance("man", "homemaker"))
