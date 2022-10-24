@@ -74,29 +74,49 @@ class WordEmbedding:
                 newvec = np.dot(self.model[word], direction) * direction
                 newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
                 self.model[word] = newvec
-        # Equalize?
-        # for w1, w2 in self.definition_pairs:
-        #     if w1 not in self.model or w2 not in self.model:
-        #         continue
-        #     mu = (self.model[w1] + self.model[w1])/2
-        #     muproj = np.dot(mu, direction) * direction
-        #     v = mu - muproj
-        #     w1proj = np.dot(self.model[w1], direction) * direction
-        #     w2proj = np.dot(self.model[w2], direction) * direction
-        #     self.model[w1] = (v + (1 - np.linalg.norm(v)**2)**0.5) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj)
-        #     self.model[w2] = (v + (1 - np.linalg.norm(v)**2)**0.5) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj)
+        for w1, w2 in self.definition_pairs:
+            if w1 not in self.model or w2 not in self.model:
+                continue
+            mu = (self.model[w1] + self.model[w2])/2
+            muproj = np.dot(mu, direction) * direction
+            v = mu - muproj
+            w1proj = np.dot(self.model[w1], direction) * direction
+            w2proj = np.dot(self.model[w2], direction) * direction
+            self.model[w1] = (v + np.sqrt((1 - np.linalg.norm(v)**2))) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj)
+            self.model[w2] = (v + np.sqrt((1 - np.linalg.norm(v)**2))) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj)
+        self.norm()
         return None
+    
+    def norm(self):
+        for word in self.model.index_to_key:
+            self.model[word] = self.model[word]/np.linalg.norm(self.model[word])
+        return
         
 
 def main():
     we = WordEmbedding(fp)
-    print(we.model.distance("woman", "homemaker"))
-    print(we.model.distance("man", "homemaker"))
-    we.debias(["he", "she", "woman", "man"])
+    print("Woman + doctor:", we.model.distance("woman", "doctor"))
+    print("Man + doctor:", we.model.distance("man", "doctor"))
+    print("Woman + nurse:", we.model.distance("woman", "nurse"))
+    print("Man + nurse:", we.model.distance("man", "nurse"))
+    print("Man + boy:", we.model.distance("man", "boy"))
+    print("Man + girl:", we.model.distance("man", "girl"))
+    print("Woman + boy:", we.model.distance("woman", "boy"))
+    print("Woman + girl:", we.model.distance("woman", "girl"))
+
+    specific = open("data/gender_specific_seed_words.json")
+    specificwords = json.load(specific)
+    we.debias(specificwords)
     
     print("NEUTRALIZED")
-    print(we.model.distance("woman", "homemaker"))
-    print(we.model.distance("man", "homemaker"))
+    print("Woman + doctor:", we.model.distance("woman", "doctor"))
+    print("Man + doctor:", we.model.distance("man", "doctor"))
+    print("Woman + nurse:", we.model.distance("woman", "nurse"))
+    print("Man + nurse:", we.model.distance("man", "nurse"))
+    print("Man + boy:", we.model.distance("man", "boy"))
+    print("Man + girl:", we.model.distance("man", "girl"))
+    print("Woman + boy:", we.model.distance("woman", "boy"))
+    print("Woman + girl:", we.model.distance("woman", "girl"))
     print("Done")
     
         
