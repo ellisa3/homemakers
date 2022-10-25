@@ -1,30 +1,24 @@
-#generating anologies
-#a:x as b:y
-# seed pair = [she, he] #[a,b]
-# x = [] #literally every word in embedding?
-# y = [] #only those who pass the threshold
+# from random import sample, seed
+# from gensim.models import KeyedVectors
+# from gensim.scripts.glove2word2vec import glove2word2vec
+# from gensim.test.utils import datapath, get_tmpfile
+import wordembedding
 
-#pseudocode
-# !git remote set-url origin https://ellisa3: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@github.com/ellisa3/homemakers.git
+# global we
+# print(global we)
+def data_load():
+  global we 
+  we = wordembedding.WordEmbedding()
 
-from random import sample, seed
-from gensim.models import KeyedVectors
-from gensim.scripts.glove2word2vec import glove2word2vec
-from gensim.test.utils import datapath, get_tmpfile
+data_load()
 
-class WordEmbedding:
+# print(we not None)
 
-    seedSimilarity = 0
-
-    def __init__(self, fp):# -> None:
-        # glove_file = datapath(fp)
-        # word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
-        # glove2word2vec(glove_file, word2vec_glove_file) 
-        # self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
-        self.model = KeyedVectors.load_word2vec_format(fp, binary=True)
-        self.model.save_word2vec_format('/content/homemakers/data/GoogleNews-vectors-negative300.txt', binary=False)
+class GenerateAnalogies:
+    def __init__(self):# -> None:
+        self.seedSimilarity = 0
+        self.model = we.model
         
-
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
         a = "he"
@@ -53,7 +47,7 @@ class WordEmbedding:
                     #print(self.seedSimilarity)
                     curr_difference = abs(self.seedSimilarity - theta)  #want to find how similar the distance values are to each other
                     if curr_difference < min_difference:
-                        print(word)
+                        #print(word)
                         min_difference = curr_difference                  
                         min_word = word                                 #keep track of the [word, degree] that minimizes that difference
                 analogy = (x, min_word[0], theta)                       #e.g., (homemakers, computer_programmer, 0.635)
@@ -62,15 +56,12 @@ class WordEmbedding:
         return analogies
         
 def main():
-    fp = '/content/homemakers/data/GoogleNews-vectors-negative300.bin'
-    we = WordEmbedding(fp)
-    print(we.findSeedSimilarity())
-
-    analogies = we.generateAnalogies('/mnt/c/CS/homemakers/data/small_x.txt')
-    print(analogies)
+    ga = GenerateAnalogies()
+    analogies = ga.generateAnalogies('/content/homemakers/data/small_x.txt')
     i = 0
     while (i < 8):
         print(analogies[i])
         i += 1
+
 
 main()
