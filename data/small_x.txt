@@ -1,1 +1,10 @@
 actor
+doctor
+athlete
+computer_programmer
+dude
+uncle 
+grandfather
+father
+aggressive
+blond

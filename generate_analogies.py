@@ -25,8 +25,10 @@ class GenerateAnalogies:
         b = "she"
         most_similar = self.model.similar_by_word(a)
         for similar_word in most_similar:
+            #print("similar_word: ", similar_word)
             if similar_word[0] == b:
                 self.seedSimilarity = similar_word[1]
+                print(self.seedSimilarity)
                 return self.seedSimilarity
         return -1
 
@@ -38,7 +40,7 @@ class GenerateAnalogies:
             j = 0
             for x in words:
                 x = x.strip() #remiove \r\n 
-                cosine_similarities = self.model.similar_by_word(x, topn=10000)
+                cosine_similarities = self.model.similar_by_word(x, topn=10)
                 curr_difference = 0
                 min_difference = 10
                 for word in cosine_similarities:
@@ -53,15 +55,21 @@ class GenerateAnalogies:
                 analogy = (x, min_word[0], theta)                       #e.g., (homemakers, computer_programmer, 0.635)
                 analogies.append(analogy)                               #[(homemakers, computer_programmer, 0.635), (nurse, doctor, 0.610), ...]
         f.close()
+        #print(len(analogies))
         return analogies
         
 def main():
     ga = GenerateAnalogies()
+    ga.findSeedSimilarity()
+
+    #print(ga.seedSimilarity)
     analogies = ga.generateAnalogies('/content/homemakers/data/small_x.txt')
     i = 0
-    while (i < 8):
-        print(analogies[i])
-        i += 1
+    print(analogies[i])
+
+    # while (i < 8):
+    #     print(analogies[i])
+    #     i += 1
 
 
 main()
