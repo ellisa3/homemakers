@@ -1,10 +1,5 @@
-actor
-doctor
-athlete
-computer_programmer
-dude
-uncle 
-grandfather
-father
-aggressive
-blond
+midwife
+sewing
+pediatrician
+registered_nurse
+housewife

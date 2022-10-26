@@ -21,8 +21,8 @@ class GenerateAnalogies:
         
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
-        a = "he"
-        b = "she"
+        a = "she"
+        b = "he"
         most_similar = self.model.similar_by_word(a)
         for similar_word in most_similar:
             #print("similar_word: ", similar_word)
@@ -35,12 +35,19 @@ class GenerateAnalogies:
     #either call it for each x OR call it once and runs on list of x's, latter more efficient    
     def generateAnalogies(self, filename):
         analogies = []
+        min_word = "" #maybe instantiated these outside the loop
+        theta = 0
         with open(filename, 'r') as f:
             words = f.readlines()
             j = 0
             for x in words:
-                x = x.strip() #remiove \r\n 
-                cosine_similarities = self.model.similar_by_word(x, topn=10)
+                x = x.strip() #remove \r\n 
+                print("<x>: ", x)
+                for occupation in ["doctor", "carpentry", "orthopedic_surgeon", "physician"]:
+                    print("   <occupation>: ", occupation)
+                    print("-     -------distance------     -")
+                    print(self.model.distance(x, occupation))
+                cosine_similarities = self.model.similar_by_word(x)
                 curr_difference = 0
                 min_difference = 10
                 for word in cosine_similarities:
@@ -65,11 +72,11 @@ def main():
     #print(ga.seedSimilarity)
     analogies = ga.generateAnalogies('/content/homemakers/data/small_x.txt')
     i = 0
-    print(analogies[i])
+    # print(analogies[i])
 
-    # while (i < 8):
-    #     print(analogies[i])
-    #     i += 1
+    while (i < 4):
+        print(analogies[i])
+        i += 1
 
 
 main()

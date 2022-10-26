@@ -112,7 +112,7 @@ def main():
 
     specific = open("data/gender_specific_seed_words.json")
     specificwords = json.load(specific)
-    we.debias(specificwords)
+    #e.debias(specificwords)
     
     # print("NEUTRALIZED")
     # print("Woman + doctor:", we.model.distance("woman", "doctor"))
