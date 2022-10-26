@@ -8,13 +8,14 @@ import numpy as np
 from config import fp
 import json
 
-
 class WordEmbedding:
 
-    def __init__(self, fp=None):
+    def __init__(self, fp=None, isLinearSVM=None):
       if fp == None:
         model = api.load('word2vec-google-news-300')
         self.model = model.wv
+      elif isLinearSVM == True:
+        self.model = model
       else:
         glove_file = datapath(fp)
         word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 

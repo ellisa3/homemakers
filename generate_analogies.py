@@ -8,7 +8,7 @@ import wordembedding
 # print(global we)
 def data_load():
   global we 
-  we = wordembedding.WordEmbedding()
+  we = wordembedding.WordEmbedding(isLinearSVM = False)
 
 data_load()
 
@@ -21,16 +21,20 @@ class GenerateAnalogies:
         
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
-        a = "she"
-        b = "he"
-        most_similar = self.model.similar_by_word(a)
-        for similar_word in most_similar:
-            #print("similar_word: ", similar_word)
-            if similar_word[0] == b:
-                self.seedSimilarity = similar_word[1]
-                print(self.seedSimilarity)
-                return self.seedSimilarity
-        return -1
+        a = "man"
+        b = "computer_programmer"
+        self.seedSimilarity = self.model.distance(a,b)
+        print(self.seedSimilarity)
+        return self.seedSimilarity
+
+        # most_similar = self.model.similar_by_word(a)
+        # for similar_word in most_similar:
+        #     #print("similar_word: ", similar_word)
+        #     if similar_word[0] == b:
+        #         self.seedSimilarity = similar_word[1]
+        #         print(self.seedSimilarity)
+        #         return self.seedSimilarity
+        # return -1
 
     #either call it for each x OR call it once and runs on list of x's, latter more efficient    
     def generateAnalogies(self, filename):
@@ -43,10 +47,8 @@ class GenerateAnalogies:
             for x in words:
                 x = x.strip() #remove \r\n 
                 print("<x>: ", x)
-                for occupation in ["doctor", "carpentry", "orthopedic_surgeon", "physician"]:
-                    print("   <occupation>: ", occupation)
-                    print("-     -------distance------     -")
-                    print(self.model.distance(x, occupation))
+                for occupation in ["homemaker"]: #, "carpentry", "orthopedic_surgeon", "physician"]:
+                    print(occupation, " : ", self.model.distance(x, occupation))
                 cosine_similarities = self.model.similar_by_word(x)
                 curr_difference = 0
                 min_difference = 10
@@ -55,8 +57,9 @@ class GenerateAnalogies:
                     theta = word[1]
                     #print(self.seedSimilarity)
                     curr_difference = abs(self.seedSimilarity - theta)  #want to find how similar the distance values are to each other
-                    if curr_difference < min_difference:
-                        #print(word)
+                    if (curr_difference < min_difference) & (curr_difference <= 1): #threshold = 1
+                        if (curr_difference < 0.83) & (curr_difference > 0.55):
+                          print("word: ", word)
                         min_difference = curr_difference                  
                         min_word = word                                 #keep track of the [word, degree] that minimizes that difference
                 analogy = (x, min_word[0], theta)                       #e.g., (homemakers, computer_programmer, 0.635)
@@ -72,11 +75,11 @@ def main():
     #print(ga.seedSimilarity)
     analogies = ga.generateAnalogies('/content/homemakers/data/small_x.txt')
     i = 0
-    # print(analogies[i])
+    print(analogies[i])
 
-    while (i < 4):
-        print(analogies[i])
-        i += 1
+    # while (i < 4):
+    #     print(analogies[i])
+    #     i += 1
 
 
 main()
