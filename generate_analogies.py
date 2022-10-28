@@ -2,13 +2,14 @@
 # from gensim.models import KeyedVectors
 # from gensim.scripts.glove2word2vec import glove2word2vec
 # from gensim.test.utils import datapath, get_tmpfile
+import numpy as np
 import wordembedding
 
 # global we
 # print(global we)
 def data_load():
   global we 
-  we = wordembedding.WordEmbedding(isLinearSVM = False)
+  we = wordembedding.WordEmbedding(fp="/content/homemakers/data/one_vector.txt", isLinearSVM = False)
 
 data_load()
 
@@ -16,16 +17,16 @@ data_load()
 
 class GenerateAnalogies:
     def __init__(self):# -> None:
-        self.seedSimilarity = 0
+        self.seedDirection = 0
         self.model = we.model
         
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
-        a = "man"
-        b = "computer_programmer"
-        self.seedSimilarity = self.model.distance(a,b)
-        print(self.seedSimilarity)
-        return self.seedSimilarity
+        a = "she"
+        b = "he"
+        self.seedDirection = self.model[a] - self.model[b]
+        #print(self.seedDirection)
+        return self.seedDirection
 
         # most_similar = self.model.similar_by_word(a)
         # for similar_word in most_similar:
@@ -46,40 +47,37 @@ class GenerateAnalogies:
             j = 0
             for x in words:
                 x = x.strip() #remove \r\n 
-                print("<x>: ", x)
-                for occupation in ["homemaker"]: #, "carpentry", "orthopedic_surgeon", "physician"]:
-                    print(occupation, " : ", self.model.distance(x, occupation))
-                cosine_similarities = self.model.similar_by_word(x)
-                curr_difference = 0
-                min_difference = 10
-                for word in cosine_similarities:
-                    #print(word)
-                    theta = word[1]
-                    #print(self.seedSimilarity)
-                    curr_difference = abs(self.seedSimilarity - theta)  #want to find how similar the distance values are to each other
-                    if (curr_difference < min_difference) & (curr_difference <= 1): #threshold = 1
-                        if (curr_difference < 0.83) & (curr_difference > 0.55):
-                          print("word: ", word)
-                        min_difference = curr_difference                  
-                        min_word = word                                 #keep track of the [word, degree] that minimizes that difference
-                analogy = (x, min_word[0], theta)                       #e.g., (homemakers, computer_programmer, 0.635)
-                analogies.append(analogy)                               #[(homemakers, computer_programmer, 0.635), (nurse, doctor, 0.610), ...]
-        f.close()
-        #print(len(analogies))
-        return analogies
+                print("x:", x)
+                print("model[x]: ", type(self.model[x]))
+                print("model: ", type(self.model.vectors))
+                differences = self.model[x] - self.model.vectors
+                np.savetxt('test.txt', differences)
+                print(differences)
+                norm = np.linalg.norm(differences, axis=1)
+                print("norm: ", (norm))
+                break
+                # if (norm <= 1){
+                #   score = np.dot(self.seedDirection, *index of differences)
+                # }
+
+        #      analogy = (x, min_word[0], theta)                       #e.g., (homemakers, computer_programmer, 0.635)
+        #         analogies.append(analogy)                               #[(homemakers, computer_programmer, 0.635), (nurse, doctor, 0.610), ...]
+        # f.close()
+        # #print(len(analogies))
+        # return analogies
         
 def main():
     ga = GenerateAnalogies()
     ga.findSeedSimilarity()
 
-    #print(ga.seedSimilarity)
+    # #print(ga.seedSimilarity)
     analogies = ga.generateAnalogies('/content/homemakers/data/small_x.txt')
-    i = 0
-    print(analogies[i])
+    # i = 0
+    # print(analogies[i])
 
-    # while (i < 4):
-    #     print(analogies[i])
-    #     i += 1
+    # # while (i < 4):
+    # #     print(analogies[i])
+    # #     i += 1
 
 
 main()
