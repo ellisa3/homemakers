@@ -9,7 +9,8 @@ import wordembedding
 # print(global we)
 def data_load():
   global we 
-  we = wordembedding.WordEmbedding(fp="/content/homemakers/data/one_vector.txt", isLinearSVM = False)
+  #we = wordembedding.WordEmbedding(fp = "/content/homemakers/data/w2v_gnews_small.txt", isLinearSVM = False)
+  we = wordembedding.WordEmbedding(isLinearSVM = False)
 
 data_load()
 
@@ -26,10 +27,12 @@ class GenerateAnalogies:
         b = "he"
         self.seedDirection = self.model[a] - self.model[b]
         #print(self.seedDirection)
+        print(self.model.index_to_key)
+
         return self.seedDirection
 
       
-    def generateAnalogies(self, filename):
+    def generateAnalogies(self, filename):        
         analogies = []
         min_word = "" #maybe instantiated these outside the loop
         theta = 0
@@ -37,18 +40,21 @@ class GenerateAnalogies:
             words = f.readlines()
             #j = 0
             for x in words:
+                break
                 x = x.strip() #remove \r\n 
-                print("x:", x)
-                print("model[x]: ", type(self.model[x]))
-                print("model: ", type(self.model.vectors))
+                # print("x:", x)
+                # print("model[x]: ", type(self.model[x]))
+                # print("model: ", type(self.model.vectors))
                 differences = self.model[x] - self.model.vectors
                 #np.savetxt('test.txt', differences)
                 #print(differences)
                 norms = np.linalg.norm(differences, axis=1)
-                print("norms: ", (norms))
+
+                #print("norms: ", (norms))
                 #print("index: ", self.model.index2word[0])
                 i = 0 #keeps track of index to link vector back to key
                 maxScore = 0
+                maxIndex = 0
                 for norm in norms:
                   if (norm <= 1):                   #only include if ||x-y|| <= 1
                     #key = self.model.index2word(i)
@@ -57,7 +63,10 @@ class GenerateAnalogies:
                       maxScore = score 
                       maxIndex = i
                   i += 1
-                analogy = [x, self.model.index2word[i]]
+                key = self.model.index2word[maxIndex]
+                print("key: ", key)
+                analogy = [x, key]
+                print(analogy)
                 analogies.append(analogy)                               #[(homemakers, computer_programmer, 0.635), (nurse, doctor, 0.610), ...]
         f.close()
         print(len(analogies))
@@ -65,16 +74,17 @@ class GenerateAnalogies:
         
 def main():
     ga = GenerateAnalogies()
+
     ga.findSeedSimilarity()
 
     # #print(ga.seedSimilarity)
-    analogies = ga.generateAnalogies('/content/homemakers/data/small_x.txt')
+    # analogies = ga.generateAnalogies('/content/homemakers/data/small_x.txt')
     # i = 0
-    # print(analogies[i])
+    # # print(analogies[i])
 
-    # # while (i < 4):
-    # #     print(analogies[i])
-    # #     i += 1
+    # while (i < 4):
+    #     print(analogies[i])
+    #     i += 1
 
 
 main()
