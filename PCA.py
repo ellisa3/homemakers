@@ -12,8 +12,8 @@ we = WordEmbedding(fp)
 
 pca = PCA(n_components=None)
 
-input_words = [('she','he'),('her','his'),('woman','man'), ('daughter', 'son'), ('mother', 'father'),
-                ('gal','guy'),('girl','boy'),('female','male')] #Ten gendered pairs from figure 5 
+input_words = [('she','he'),('her','his'),('woman','man'),  ('herself', 'himself'), ('daughter', 'son'), ('mother', 'father'),
+                ('gal','guy'),('girl','boy'),('female','male')] #Ten gendered pairs from figure 5 ('mary', 'john'),
 input_vectors = []
 
 for word in input_words:
@@ -21,9 +21,9 @@ for word in input_words:
     # input_word_vec1 - input_word_vec2
     # print("Pair: ",we.model[word[1]], we.model[word[0]])
 input_vectors = np.array(input_vectors) # turn the word vectors into a np array
-print(input_vectors)
+print(input_vectors, len(input_vectors))
 
-data_std_pca = pca.fit(input_vectors) # fit data to model
+data_std_pca = pca.fit_transform(input_vectors) # fit data to model
 
 variance = pca.explained_variance_ratio_ * 100
 # print('Variance: ', variance)
