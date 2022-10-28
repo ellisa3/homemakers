@@ -28,43 +28,40 @@ class GenerateAnalogies:
         #print(self.seedDirection)
         return self.seedDirection
 
-        # most_similar = self.model.similar_by_word(a)
-        # for similar_word in most_similar:
-        #     #print("similar_word: ", similar_word)
-        #     if similar_word[0] == b:
-        #         self.seedSimilarity = similar_word[1]
-        #         print(self.seedSimilarity)
-        #         return self.seedSimilarity
-        # return -1
-
-    #either call it for each x OR call it once and runs on list of x's, latter more efficient    
+      
     def generateAnalogies(self, filename):
         analogies = []
         min_word = "" #maybe instantiated these outside the loop
         theta = 0
         with open(filename, 'r') as f:
             words = f.readlines()
-            j = 0
+            #j = 0
             for x in words:
                 x = x.strip() #remove \r\n 
                 print("x:", x)
                 print("model[x]: ", type(self.model[x]))
                 print("model: ", type(self.model.vectors))
                 differences = self.model[x] - self.model.vectors
-                np.savetxt('test.txt', differences)
-                print(differences)
-                norm = np.linalg.norm(differences, axis=1)
-                print("norm: ", (norm))
-                break
-                # if (norm <= 1){
-                #   score = np.dot(self.seedDirection, *index of differences)
-                # }
-
-        #      analogy = (x, min_word[0], theta)                       #e.g., (homemakers, computer_programmer, 0.635)
-        #         analogies.append(analogy)                               #[(homemakers, computer_programmer, 0.635), (nurse, doctor, 0.610), ...]
-        # f.close()
-        # #print(len(analogies))
-        # return analogies
+                #np.savetxt('test.txt', differences)
+                #print(differences)
+                norms = np.linalg.norm(differences, axis=1)
+                print("norms: ", (norms))
+                #print("index: ", self.model.index2word[0])
+                i = 0 #keeps track of index to link vector back to key
+                maxScore = 0
+                for norm in norms:
+                  if (norm <= 1):                   #only include if ||x-y|| <= 1
+                    #key = self.model.index2word(i)
+                    score = np.dot(self.seedDirection, differences[i])
+                    if (score > maxScore):    #keep track of biggest score value and associated vector
+                      maxScore = score 
+                      maxIndex = i
+                  i += 1
+                analogy = [x, self.model.index2word[i]]
+                analogies.append(analogy)                               #[(homemakers, computer_programmer, 0.635), (nurse, doctor, 0.610), ...]
+        f.close()
+        print(len(analogies))
+        return analogies
         
 def main():
     ga = GenerateAnalogies()
