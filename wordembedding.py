@@ -95,29 +95,6 @@ class WordEmbedding:
 
 def main():
     we = WordEmbedding(fp)
-    print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    print("Man + doctor:", we.model.distance("man", "doctor"))
-    print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    print("Man + nurse:", we.model.distance("man", "nurse"))
-    print("Man + boy:", we.model.distance("man", "boy"))
-    print("Man + girl:", we.model.distance("man", "girl"))
-    print("Woman + boy:", we.model.distance("woman", "boy"))
-    print("Woman + girl:", we.model.distance("woman", "girl"))
-
-    specific = open("data/gender_specific_seed_words.json")
-    specificwords = json.load(specific)
-    we.debias(specificwords)
-    
-    print("NEUTRALIZED")
-    print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    print("Man + doctor:", we.model.distance("man", "doctor"))
-    print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    print("Man + nurse:", we.model.distance("man", "nurse"))
-    print("Man + boy:", we.model.distance("man", "boy"))
-    print("Man + girl:", we.model.distance("man", "girl"))
-    print("Woman + boy:", we.model.distance("woman", "boy"))
-    print("Woman + girl:", we.model.distance("woman", "girl"))
-    print("Done")
     
         
 # main()

@@ -12,12 +12,16 @@ we = WordEmbedding(fp)
 
 pca = PCA(n_components=None)
 
-input_words = ['in','for','that','actresses','actress','leopard']
+input_words = [('she','he'),('her','his'),('woman','man'), ('daughter', 'son'), ('mother', 'father'),
+                ('gal','guy'),('girl','boy'),('female','male')] #Ten gendered pairs from figure 5 
 input_vectors = []
 
 for word in input_words:
-    input_vectors.append(we.model[word])
+    input_vectors.append(we.model[word[0]] - we.model[word[1]]) #Difference vectors of 10 gender pairs
+    # input_word_vec1 - input_word_vec2
+    # print("Pair: ",we.model[word[1]], we.model[word[0]])
 input_vectors = np.array(input_vectors) # turn the word vectors into a np array
+print(input_vectors)
 
 data_std_pca = pca.fit(input_vectors) # fit data to model
 
@@ -38,5 +42,5 @@ plt.xlabel('Principal components')
 plt.xticks(ticks=[]) # No ticks under bars
 plt.legend(loc='best')
 plt.tight_layout()
-plt.savefig("visualizations/ExplainedVariancePlot.png")
+# plt.savefig("visualizations/ExplainedVariancePlot.png")
 plt.show()
