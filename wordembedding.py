@@ -12,10 +12,13 @@ class WordEmbedding:
 
     def __init__(self, fp=None, isLinearSVM=None):
       if fp == None:
-        model = api.load('word2vec-google-news-300')
-        self.model = model.wv
-      elif isLinearSVM == True:
-        self.model = model
+        print(isLinearSVM)
+        if isLinearSVM:
+            model = api.load('word2vec-google-news-300')
+            self.model = model
+        else:
+            model = api.load('word2vec-google-news-300')
+            self.model = model.wv
       else:
         glove_file = datapath(fp)
         word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
@@ -24,7 +27,6 @@ class WordEmbedding:
         with open("./data/definition_pairs.json") as dpfile:
             self.definition_pairs = json.load(dpfile)
         
-    
     def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
         most_similar_key, similarity = result[0]  # look at the first match
@@ -53,9 +55,6 @@ class WordEmbedding:
             sim_words = append_list(sim_words, words)
             result_words.extend(sim_words)
 
-        # most_similar_keys = [word[0] for word in result_words]
-        # similarity = [word[1] for word in result_words]
-        # similar_to = [word[2] for word in result_words]
         return result_words
 
     def debias(self, gendered):

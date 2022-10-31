@@ -1,23 +1,14 @@
-# from random import sample, seed
-# from gensim.models import KeyedVectors
-# from gensim.scripts.glove2word2vec import glove2word2vec
-# from gensim.test.utils import datapath, get_tmpfile
 import numpy as np
 import wordembedding
 
-# global we
-# print(global we)
 def data_load():
   global we 
   we = wordembedding.WordEmbedding(fp = "/content/homemakers/data/w2v_gnews_small.txt", isLinearSVM = False)
-  #we = wordembedding.WordEmbedding(isLinearSVM = False)
 
 data_load()
 
-# print(we not None)
-
 class GenerateAnalogies:
-    def __init__(self):# -> None:
+    def __init__(self):
         self.seedDirection = 0
         self.model = we.model
         
@@ -67,7 +58,6 @@ class GenerateAnalogies:
         
 def main():
     ga = GenerateAnalogies()
-
     ga.findSeedSimilarity()
 
     # #print(ga.seedSimilarity)
