@@ -12,12 +12,13 @@ class WordEmbedding:
 
     def __init__(self, fp=None, isLinearSVM=None):
       if fp == None:
-        if isLinearSVM == True:
+        print(isLinearSVM)
+        if isLinearSVM:
             model = api.load('word2vec-google-news-300')
             self.model = model
         else:
             model = api.load('word2vec-google-news-300')
-        self.model = model.wv
+            self.model = model.wv
       else:
         glove_file = datapath(fp)
         word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 

@@ -11,7 +11,7 @@ with open('./data/gender_seed_small.json', "r") as f:
 # file path of the embedding subset
 we_subset = wordembedding.WordEmbedding(fp_subset)
 # file path of the full embedding
-we = wordembedding.WordEmbedding()
+we = wordembedding.WordEmbedding(isLinearSVM = True)
 
 X = []
 y = []
