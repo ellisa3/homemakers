@@ -60,6 +60,41 @@ class WordEmbedding:
 
     def debias(self, gendered):
         #Find gender direction
+        direction = self.findBiasDirection()
+
+        #Loop over words and debias them if they're gendered
+        for word in self.model.index_to_key:
+            if word.lower() in gendered:
+                continue
+            else:
+                newvec = self.project(word, direction)
+                newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
+                self.model[word] = newvec
+        for w1, w2 in self.definition_pairs:
+            if w1 not in self.model or w2 not in self.model:
+                continue
+            mu = (self.model[w1] + self.model[w2])/2
+            muproj = self.project(mu, direction)
+            v = mu - muproj
+            w1proj = self.project(w1, direction)
+            w2proj = self.project(w2, direction)
+            self.model[w1] = (v + np.sqrt((1 - np.linalg.norm(v)**2))) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj)
+            self.model[w2] = (v + np.sqrt((1 - np.linalg.norm(v)**2))) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj)
+        self.norm()
+        return None
+    
+    def norm(self):
+        for word in self.model.index_to_key:
+            self.model[word] = self.model[word]/np.linalg.norm(self.model[word])
+        return self.model
+    
+    def project(self, word, direction):
+        if isinstance(word, str):
+            return np.dot(self.model[word], direction) * direction
+        else: 
+            return np.dot(word, direction) * direction
+
+    def findBiasDirection(self):
         toFit = []
         for w1, w2 in self.definition_pairs:
             if w1 not in self.model or w2 not in self.model:
@@ -73,58 +108,14 @@ class WordEmbedding:
             toFit.append(self.model[w2] - average)
         pca = PCA(1)
         pca.fit(toFit)
-        direction = pca.components_[0]
-        for word in self.model.index_to_key:
-            if word.lower() in gendered:
-                continue
-            else:
-                newvec = np.dot(self.model[word], direction) * direction
-                newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
-                self.model[word] = newvec
-        for w1, w2 in self.definition_pairs:
-            if w1 not in self.model or w2 not in self.model:
-                continue
-            mu = (self.model[w1] + self.model[w2])/2
-            muproj = np.dot(mu, direction) * direction
-            v = mu - muproj
-            w1proj = np.dot(self.model[w1], direction) * direction
-            w2proj = np.dot(self.model[w2], direction) * direction
-            self.model[w1] = (v + np.sqrt((1 - np.linalg.norm(v)**2))) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj)
-            self.model[w2] = (v + np.sqrt((1 - np.linalg.norm(v)**2))) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj)
-        self.norm()
-        return None
+        return pca.components_[0]
+
     
-    def norm(self):
-        for word in self.model.index_to_key:
-            self.model[word] = self.model[word]/np.linalg.norm(self.model[word])
-        return
+    
         
 
 def main():
     we = WordEmbedding(fp)
-    # print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    # print("Man + doctor:", we.model.distance("man", "doctor"))
-    # print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    # print("Man + nurse:", we.model.distance("man", "nurse"))
-    # print("Man + boy:", we.model.distance("man", "boy"))
-    # print("Man + girl:", we.model.distance("man", "girl"))
-    # print("Woman + boy:", we.model.distance("woman", "boy"))
-    # print("Woman + girl:", we.model.distance("woman", "girl"))
-
-    specific = open("data/gender_specific_seed_words.json")
-    specificwords = json.load(specific)
-    #e.debias(specificwords)
-    
-    # print("NEUTRALIZED")
-    # print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    # print("Man + doctor:", we.model.distance("man", "doctor"))
-    # print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    # print("Man + nurse:", we.model.distance("man", "nurse"))
-    # print("Man + boy:", we.model.distance("man", "boy"))
-    # print("Man + girl:", we.model.distance("man", "girl"))
-    # print("Woman + boy:", we.model.distance("woman", "boy"))
-    # print("Woman + girl:", we.model.distance("woman", "girl"))
-    # print("Done")
-    
+      
         
-# main()
+main()
