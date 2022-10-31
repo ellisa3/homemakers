@@ -9,8 +9,8 @@ import wordembedding
 # print(global we)
 def data_load():
   global we 
-  #we = wordembedding.WordEmbedding(fp = "/content/homemakers/data/w2v_gnews_small.txt", isLinearSVM = False)
-  we = wordembedding.WordEmbedding(isLinearSVM = False)
+  we = wordembedding.WordEmbedding(fp = "/content/homemakers/data/w2v_gnews_small.txt", isLinearSVM = False)
+  #we = wordembedding.WordEmbedding(isLinearSVM = False)
 
 data_load()
 
@@ -50,13 +50,12 @@ class GenerateAnalogies:
                 for norm in norms:
                   #print("norm: ", norm)
                   if (norm <= 1):                   #only include if ||x-y|| <= 1
-                    print("norm <= 1")          
+                    #print("norm <= 1")          
                     score = np.dot(self.seedDirection, differences[i])
                     if (score > maxScore):    #keep track of biggest score value and associated vector
                       maxScore = score 
                       maxIndex = i
                   i += 1
-                  break
                 key = self.model.index2word[maxIndex] #</s>
                 #print("key: ", key)
                 analogy = [x, key]
@@ -75,6 +74,11 @@ def main():
     analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
     i = 0
     print(analogies[i])
+    f = open('we_analogies.txt', 'a')
+    i = 0
+    for analogy in analogies:
+      f.write(" ".join(analogy))
+      f.write("\n")
 
     # while (i < 4):
     #     print(analogies[i])
