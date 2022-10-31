@@ -53,7 +53,7 @@ class WordEmbedding:
 
     def debias(self, gendered):
         #Find gender direction
-        direction = self.findBiasDirection()
+        direction = self.findBiasDirection(self.definition_pairs)
 
         #Loop over words and debias them if they're gendered
         for word in self.model.index_to_key:
@@ -80,6 +80,10 @@ class WordEmbedding:
         for word in self.model.index_to_key:
             self.model[word] = self.model[word]/np.linalg.norm(self.model[word])
         return self.model
+
+    def normOne(self, vector):
+        print(vector, np.linalg.norm(vector))
+        return vector/np.linalg.norm(vector)
     
     def project(self, word, direction):
         if isinstance(word, str):
@@ -87,9 +91,9 @@ class WordEmbedding:
         else: 
             return np.dot(word, direction) * direction
 
-    def findBiasDirection(self):
+    def findBiasDirection(self, definition_pairs):
         toFit = []
-        for w1, w2 in self.definition_pairs:
+        for w1, w2 in definition_pairs:
             if w1 not in self.model or w2 not in self.model:
                 continue
             w1 = w1.lower()
@@ -103,32 +107,26 @@ class WordEmbedding:
         pca.fit(toFit)
         return pca.components_[0]
 
+    def findBiasDirections(self, definition_pairs):
+        toFit = []
+        for w1, w2 in definition_pairs:
+            if w1 not in self.model or w2 not in self.model:
+                continue
+            w1 = w1.lower()
+            w2 = w2.lower()
+            #Find average between two vector pairs such as (man, woman) or (he, she)
+            average = (self.model[w1] + self.model[w2])/2
+            #Add the difference between the average of both vectors to list of vectors to do PCA with
+            toFit.append(self.normOne(self.model[w1] - average))
+            toFit.append(self.normOne(self.model[w2] - average))
+        pca = PCA(1)
+        pca.fit(toFit)
+        return pca.components_[:,:2]
     
     
         
 
 def main():
     we = WordEmbedding(fp)
-    print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    print("Man + doctor:", we.model.distance("man", "doctor"))
-    print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    print("Man + nurse:", we.model.distance("man", "nurse"))
-    print("Man + boy:", we.model.distance("man", "actor"))
-    print("Woman + boy:", we.model.distance("woman", "actress"))
-
-    specific = open("data/gender_specific_seed_words.json")
-    specificwords = json.load(specific)
-    specificwords = [word.lower() for word in specificwords]
-    we.debias(specificwords)
-    
-    print("NEUTRALIZED")
-    print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    print("Man + doctor:", we.model.distance("man", "doctor"))
-    print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    print("Man + nurse:", we.model.distance("man", "nurse"))
-    print("Man + boy:", we.model.distance("man", "actor"))
-    print("Woman + boy:", we.model.distance("woman", "actress"))
-    print("Done")
-    
         
 main()
