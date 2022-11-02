@@ -4,19 +4,29 @@ from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
 from sklearn.decomposition import PCA
 import numpy as np
+import gensim.downloader as api
 from config import fp
 import json
 
 
 class WordEmbedding:
 
-    def __init__(self, fp):
-        glove_file = datapath(fp)
-        word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
-        glove2word2vec(glove_file, word2vec_glove_file) 
-        self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
-        with open("./data/definition_pairs.json") as dpfile:
-            self.definition_pairs = json.load(dpfile)
+    def __init__(self, fp=None, isLinearSVM=False):
+        if fp == None:
+            print(isLinearSVM)
+            if isLinearSVM:
+                model = api.load('word2vec-google-news-300')
+                self.model = model
+            else:
+                model = api.load('word2vec-google-news-300')
+                self.model = model.wv
+        else:
+            glove_file = datapath(fp)
+            word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
+            glove2word2vec(glove_file, word2vec_glove_file) 
+            self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
+            with open("./data/definition_pairs.json") as dpfile:
+                self.definition_pairs = json.load(dpfile)
     
     def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
