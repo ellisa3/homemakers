@@ -2,31 +2,22 @@ from random import sample
 from gensim.models import KeyedVectors
 from gensim.scripts.glove2word2vec import glove2word2vec
 from gensim.test.utils import datapath, get_tmpfile
-import gensim.downloader as api
 from sklearn.decomposition import PCA
 import numpy as np
 from config import fp
 import json
 
+
 class WordEmbedding:
 
-    def __init__(self, fp=None, isLinearSVM=None):
-      if fp == None:
-        print(isLinearSVM)
-        if isLinearSVM:
-            model = api.load('word2vec-google-news-300')
-            self.model = model
-        else:
-            model = api.load('word2vec-google-news-300')
-            self.model = model.wv
-      else:
+    def __init__(self, fp):
         glove_file = datapath(fp)
         word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
         glove2word2vec(glove_file, word2vec_glove_file) 
         self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
         with open("./data/definition_pairs.json") as dpfile:
             self.definition_pairs = json.load(dpfile)
-        
+    
     def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
         most_similar_key, similarity = result[0]  # look at the first match
@@ -44,7 +35,7 @@ class WordEmbedding:
                 sim_words_tuple = tuple(sim_words_list)
                 list_of_words.append(sim_words_tuple)
 
-            # print("list of words", list_of_words)    
+            print("list of words", list_of_words)    
             return list_of_words
         
         user_input = [word.strip() for word in input_words.split(',')]
@@ -55,6 +46,9 @@ class WordEmbedding:
             sim_words = append_list(sim_words, words)
             result_words.extend(sim_words)
 
+        # most_similar_keys = [word[0] for word in result_words]
+        # similarity = [word[1] for word in result_words]
+        # similar_to = [word[2] for word in result_words]
         return result_words
 
     def debias(self, gendered):
@@ -112,8 +106,28 @@ class WordEmbedding:
         pca.fit(toFit)
         return pca.components_[0]   
 
-# def main():
-    # we = WordEmbedding(fp)
-      
+def main():
+    we = WordEmbedding(fp)
+    # print("Woman + doctor:", we.model.distance("woman", "doctor"))
+    # print("Man + doctor:", we.model.distance("man", "doctor"))
+    # print("Woman + nurse:", we.model.distance("woman", "nurse"))
+    # print("Man + nurse:", we.model.distance("man", "nurse"))
+    # print("Man + boy:", we.model.distance("man", "actor"))
+    # print("Woman + boy:", we.model.distance("woman", "actress"))
+
+    specific = open("data/gender_specific_seed_words.json")
+    specificwords = json.load(specific)
+    specificwords = [word.lower() for word in specificwords]
+    we.debias(specificwords)
+    
+    # print("NEUTRALIZED")
+    # print("Woman + doctor:", we.model.distance("woman", "doctor"))
+    # print("Man + doctor:", we.model.distance("man", "doctor"))
+    # print("Woman + nurse:", we.model.distance("woman", "nurse"))
+    # print("Man + nurse:", we.model.distance("man", "nurse"))
+    # print("Man + boy:", we.model.distance("man", "actor"))
+    # print("Woman + boy:", we.model.distance("woman", "actress"))
+    # print("Done")
+    
         
-# main()
+main()
