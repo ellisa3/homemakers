@@ -73,6 +73,7 @@ def main():
     gender_neutral = json.load(f)
     ga.we.debias(gender_neutral)
 
+
     analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
     i = 0
     print(analogies[i])
