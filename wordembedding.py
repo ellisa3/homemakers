@@ -27,6 +27,8 @@ class WordEmbedding:
             self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
             with open("./data/definition_pairs.json") as dpfile:
                 self.definition_pairs = json.load(dpfile)
+            with open("./data/equalize_pairs.json") as dpfile:
+                self.equalize_pairs = json.load(dpfile)
     
     def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
@@ -74,7 +76,7 @@ class WordEmbedding:
                 newvec = self.project(word, direction)
                 newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
                 self.model[word] = newvec
-        for w1, w2 in self.definition_pairs:
+        for w1, w2 in self.equalize_pairs:
             if w1 not in self.model or w2 not in self.model:
                 continue
             mu = (self.model[w1] + self.model[w2])/2
@@ -105,6 +107,7 @@ class WordEmbedding:
         toFit = []
         for w1, w2 in self.definition_pairs:
             if w1 not in self.model or w2 not in self.model:
+                print(w1, w2)
                 continue
             w1 = w1.lower()
             w2 = w2.lower()
