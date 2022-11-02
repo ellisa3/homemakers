@@ -54,6 +54,7 @@ class WordEmbedding:
     def debias(self, gendered):
         #Find gender direction
         direction = self.findBiasDirection()
+        gendered = [word.lower() for word in gendered]
 
         #Loop over words and debias them if they're gendered
         for word in self.model.index_to_key:
