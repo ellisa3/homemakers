@@ -83,7 +83,7 @@ class WordEmbedding:
 
     def normOne(self, vector):
         print(vector, np.linalg.norm(vector))
-        return vector/np.linalg.norm(vector)
+        return vector/np.linalg.norm(vector)#, axis=1)
     
     def project(self, word, direction):
         if isinstance(word, str):
@@ -107,7 +107,7 @@ class WordEmbedding:
         pca.fit(toFit)
         return pca.components_[0]
 
-    def findBiasDirections(self, definition_pairs):
+    def doPCA(self, definition_pairs):
         toFit = []
         for w1, w2 in definition_pairs:
             if w1 not in self.model or w2 not in self.model:
@@ -119,9 +119,11 @@ class WordEmbedding:
             #Add the difference between the average of both vectors to list of vectors to do PCA with
             toFit.append(self.normOne(self.model[w1] - average))
             toFit.append(self.normOne(self.model[w2] - average))
-        pca = PCA(1)
-        pca.fit(toFit)
-        return pca.components_[:,:2]
+
+        toFit = np.array(toFit)
+        pca = PCA(n_components=10)
+        pca.fit_transform(toFit)#.reshape(1,-1)
+        return pca
     
     
         
@@ -129,4 +131,5 @@ class WordEmbedding:
 def main():
     we = WordEmbedding(fp)
         
-main()
+if __name__ == '__main__':
+    main()

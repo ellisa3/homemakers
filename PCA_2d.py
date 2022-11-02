@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 import wordembedding as we
 
 
-def display_pca_scatterplot_3D(we, user_input=None, words=None, label=None, color_map=None, topn=5, sample=10):
+def display_pca_scatterplot_2D(we, user_input=None, words=None, label=None, color_map=None, topn=5, sample=10):
 
     if words == None:
         if sample > 0:
@@ -15,55 +15,37 @@ def display_pca_scatterplot_3D(we, user_input=None, words=None, label=None, colo
         else:
             words = [ word for word in we.model.vocab ]
     
+    # print(words)
     word_vectors = np.array([we.model[w] for w in words])
     
     two_dim = PCA(random_state=0).fit_transform(word_vectors)[:,:2]
-    gender_subspace = we.findBiasDirections(we.definition_pairs) #x dimension in the gender bias direction
-    ## NEED ANALOGIES DIRECTION TO MAKE THIS A 2D ARRAY
+    gender_subspace = PCA(random_state=0).fit_transform(word_vectors)[:,:2] #x dimension in the gender bias direction (.compintnts)
+
+    print(gender_subspace)
+    
+    ## (Axis orthogonal to gender direction)??
     data = []
     count = 0
-    
-    for i in range (len(user_input)):
-
-                trace = go.Scatter(
-                    x = two_dim[count:count+topn,0], 
-                    y = two_dim[count:count+topn,1],  
-                    text = words[count:count+topn],
-                    name = user_input[i],
-                    textposition = "top center",
-                    textfont_size = 20,
-                    mode = 'markers+text',
-                    marker = {
-                        'size': 10,
-                        'opacity': 0.8,
-                        'color': 2
-                    }
-       
-                )
-                tracez = go.Scatter(
-                    x = gender_subspace[count:count+topn,0], 
-                    y = gender_subspace[count:count+topn,1],  
-                    text = words[count:count+topn],
-                    name = user_input[i],
-                    textposition = "top center",
-                    textfont_size = 20,
-                    mode = 'markers+text',
-                    marker = {
-                        'size': 10,
-                        'opacity': 0.8,
-                        'color': 2
-                    }
-       
-                )
-                
-                # For 2D, instead of using go.Scatter3d, we need to use go.Scatter and delete the z variable. Also, instead of using variable three_dim, use the variable that we have declared earlier (e.g two_dim)
-            
-                data.append(tracez) #gender subspace
-                count = count+topn
 
     trace_input = go.Scatter(
-                    x = two_dim[count:,0], 
-                    y = two_dim[count:,1],  
+                    x = two_dim[count:,0], #list of x coord
+                    y = two_dim[count:,1],  # list of y coords
+                    text = words[count:],   # list of words seperated
+                    name = 'input words',   
+                    textposition = "top center",
+                    textfont_size = 20,
+                    mode = 'markers+text',
+                    marker = {
+                        'size': 10,
+                        'opacity': 1,
+                        'color': 'black'
+                    }
+                    )
+
+    # plot inputs
+    trace_inputz = go.Scatter(
+                    x = gender_subspace[count:,0], 
+                    y = gender_subspace[count:,1],  
                     text = words[count:],
                     name = 'input words',
                     textposition = "top center",
@@ -76,7 +58,6 @@ def display_pca_scatterplot_3D(we, user_input=None, words=None, label=None, colo
                     }
                     )
 
-    # For 2D, instead of using go.Scatter3d, we need to use go.Scatter and delete the z variable.  Also, instead of using variable three_dim, use the variable that we have declared earlier (e.g two_dim)
             
     data.append(trace_input)    
     # Configure the layout
@@ -106,19 +87,21 @@ def display_pca_scatterplot_3D(we, user_input=None, words=None, label=None, colo
     
 def format_plot_data(plot_data, input_words):
     user_input = [x.strip() for x in input_words.split(',')]
-    similar_word = [word[0] for word in plot_data]
-    similarity = [word[1] for word in plot_data] 
-    similar_word.extend(user_input)
-    labels = [word[2] for word in plot_data]
-    label_dict = dict([(y,x+1) for x,y in enumerate(set(labels))]) #??
-    color_map = [label_dict[x] for x in labels]
-    return [user_input, similar_word,similarity,labels,label_dict, color_map]
+    # labels = [word[2] for word in plot_data]
+    # label_dict = dict([(y,x+1) for x,y in enumerate(set(labels))]) #??
+    # color_map = [label_dict[x] for x in labels]
+    return [user_input]
 
 # display_pca_scatterplot_3D(model, user_input, similar_word, labels, color_map)
-embedding = we.WordEmbedding('/Users/darrylyork3/Desktop/Comps22/homemakers/data/w2v_gnews_super_small.txt')
+embedding = we.WordEmbedding('/Users/darrylyork3/Desktop/Comps22/homemakers/data/w2v_gnews_small.txt')
 
-sim_words = embedding.generateNSimilar('actress, aunt, leopard, bachelor', 2) # Work on this 
+input_words = ['actress', 'aunt', 'leopard', 'bachelor', 'in', 'for', 'in']
 
-plot_data = format_plot_data(sim_words, 'actress, aunt, leopard, bachelor')
+for pair in embedding.definition_pairs:
+    print(pair, pair[0])
+    if pair[0] in embedding.model.key_to_index:
+        input_words.append(pair[0])
+    if pair[1] in embedding.model.key_to_index: 
+        input_words.append(pair[1])
 
-display_pca_scatterplot_3D(embedding, plot_data[0], plot_data[1], plot_data[2], plot_data[3])
+display_pca_scatterplot_2D(embedding, words=input_words)
