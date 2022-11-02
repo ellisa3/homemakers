@@ -80,6 +80,9 @@ class WordEmbedding:
         for word in self.model.index_to_key:
             self.model[word] = self.model[word]/np.linalg.norm(self.model[word])
         return self.model
+
+    def normOne(self, vector):
+        return vector/np.linalg.norm(vector)
     
     def project(self, word, direction):
         if isinstance(word, str):
@@ -97,15 +100,11 @@ class WordEmbedding:
             #Find average between two vector pairs such as (man, woman) or (he, she)
             average = (self.model[w1] + self.model[w2])/2
             #Add the difference between the average of both vectors to list of vectors to do PCA with
-            toFit.append(self.model[w1] - average)
-            toFit.append(self.model[w2] - average)
+            toFit.append(self.normOne(self.model[w1] - average))
+            toFit.append(self.normOne(self.model[w2] - average))
         pca = PCA(1)
         pca.fit(toFit)
-        return pca.components_[0]
-
-    
-    
-        
+        return pca.components_[0]   
 
 def main():
     we = WordEmbedding(fp)
