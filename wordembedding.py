@@ -121,18 +121,18 @@ class WordEmbedding:
         return pca.components_[0]   
 
 def main():
-    we = WordEmbedding(fp)
-    # print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    # print("Man + doctor:", we.model.distance("man", "doctor"))
-    # print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    # print("Man + nurse:", we.model.distance("man", "nurse"))
-    # print("Man + boy:", we.model.distance("man", "actor"))
-    # print("Woman + boy:", we.model.distance("woman", "actress"))
+    # we = WordEmbedding(fp)
+    # # print("Woman + doctor:", we.model.distance("woman", "doctor"))
+    # # print("Man + doctor:", we.model.distance("man", "doctor"))
+    # # print("Woman + nurse:", we.model.distance("woman", "nurse"))
+    # # print("Man + nurse:", we.model.distance("man", "nurse"))
+    # # print("Man + boy:", we.model.distance("man", "actor"))
+    # # print("Woman + boy:", we.model.distance("woman", "actress"))
 
-    specific = open("data/gender_specific_seed_words.json")
-    specificwords = json.load(specific)
-    specificwords = [word.lower() for word in specificwords]
-    we.debias(specificwords)
+    # specific = open("data/gender_specific_seed_words.json")
+    # specificwords = json.load(specific)
+    # specificwords = [word.lower() for word in specificwords]
+    # we.debias(specificwords)
     
     # print("NEUTRALIZED")
     # print("Woman + doctor:", we.model.distance("woman", "doctor"))

@@ -1,5 +1,6 @@
 import numpy as np
 import wordembedding
+import json
 
 def data_load():
   global we 
@@ -61,13 +62,15 @@ def main():
       f.write(" ".join(analogy))
       f.write("\n")
 
-    gender_neutral = []
-    f = open("data/gender_neutral_predict.txt", 'r')
-    words = f.readlines()
-    for word in words:
-        word = word.strip() #remove \r\n 
-        gender_neutral.append(word)
-    
+    # gender_neutral = []
+    # f = open("data/gender_neutral_predict.txt", 'r')
+    # words = f.readlines()
+    # for word in words:
+    #     word = word.strip() #remove \r\n 
+    #     gender_neutral.append(word)
+
+    f = open("data/genderedPaper.json", 'r')
+    gender_neutral = json.load(f)
     ga.we.debias(gender_neutral)
 
     analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
