@@ -2,7 +2,7 @@ import numpy as np
 from sklearn import svm
 import json
 import wordembedding
-from config import fp_subset, fp
+from config import fp_subset
 
 gender_seed_words = set()
 with open('./data/gender_seed_small.json', "r") as f:
@@ -11,7 +11,7 @@ with open('./data/gender_seed_small.json', "r") as f:
 # file path of the embedding subset
 we_subset = wordembedding.WordEmbedding(fp_subset)
 # file path of the full embedding
-we = wordembedding.WordEmbedding(fp)
+we = wordembedding.WordEmbedding(isLinearSVM = True)
 
 X = []
 y = []
