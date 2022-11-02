@@ -113,8 +113,8 @@ class WordEmbedding:
     
         
 
-def main():
-    we = WordEmbedding(fp)
+# def main():
+    # we = WordEmbedding(fp)
       
         
-main()
+# main()
