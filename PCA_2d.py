@@ -17,15 +17,52 @@ def display_pca_scatterplot_2D(we, user_input=None, words=None, label=None, colo
     
     # print(words)
     word_vectors = np.array([we.model[w] for w in words])
+
     
     two_dim = PCA(random_state=0).fit_transform(word_vectors)[:,:2]
-    gender_subspace = PCA(random_state=0).fit_transform(word_vectors)[:,:2] #x dimension in the gender bias direction (.compintnts)
+    gender_subspace = we.doPCA(we.definition_pairs).transform(word_vectors)[:,:2] #x dimension in the gender bias direction (.compintnts)
 
-    print(gender_subspace)
+    # print(gender_subspace)
     
     ## (Axis orthogonal to gender direction)??
     data = []
     count = 0
+    
+    # For n closest words
+    # for i in range (len(user_input)):
+    #     trace = go.Scatter(  
+    #         x = two_dim[count:count+topn,0], 
+    #         y = two_dim[count:count+topn,1],  
+    #         text = words[count:count+topn],
+    #         name = user_input[i],
+    #         textposition = "top center",
+    #         textfont_size = 20,
+    #         mode = 'markers+text',
+    #         marker = {
+    #             'size': 10,
+    #             'opacity': 0.8,
+    #             'color': 2
+    #         }
+
+    #     )
+    #     tracez = go.Scatter(
+    #         x = gender_subspace[count:count+topn,0], 
+    #         y = gender_subspace[count:count+topn,1],  
+    #         text = words[count:count+topn],
+    #         name = user_input[i],
+    #         textposition = "top center",
+    #         textfont_size = 20,
+    #         mode = 'markers+text',
+    #         marker = {
+    #             'size': 10,
+    #             'opacity': 0.8,
+    #             'color': 2
+    #         }
+
+    #     )
+            
+    #     data.append(tracez) # topn closest words to input
+    #     count = count+topn
 
     trace_input = go.Scatter(
                     x = two_dim[count:,0], #list of x coord
@@ -59,7 +96,7 @@ def display_pca_scatterplot_2D(we, user_input=None, words=None, label=None, colo
                     )
 
             
-    data.append(trace_input)    
+    data.append(trace_inputz)    
     # Configure the layout
 
     layout = go.Layout(

@@ -110,7 +110,8 @@ class WordEmbedding:
     def doPCA(self, definition_pairs):
         toFit = []
         for w1, w2 in definition_pairs:
-            if w1 not in self.model or w2 not in self.model:
+            if w1 not in self.model.key_to_index or w2 not in self.model.key_to_index:
+                print('Word Not found')
                 continue
             w1 = w1.lower()
             w2 = w2.lower()
@@ -119,10 +120,12 @@ class WordEmbedding:
             #Add the difference between the average of both vectors to list of vectors to do PCA with
             toFit.append(self.normOne(self.model[w1] - average))
             toFit.append(self.normOne(self.model[w2] - average))
-
+        
+        print("toFit:",toFit)
         toFit = np.array(toFit)
+        print("npArray:",toFit)
         pca = PCA(n_components=10)
-        pca.fit_transform(toFit)#.reshape(1,-1)
+        pca.fit(toFit)#.reshape(1,-1)
         return pca
     
     
