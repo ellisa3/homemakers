@@ -70,15 +70,25 @@ class WordEmbedding:
 
         #Loop over words and debias them if they're gendered
         for word in self.model.index_to_key:
-            if word.lower() in gendered:
+            if word.lower() not in gendered and word not in gendered:
                 continue
             else:
+                if word.lower() in gendered and word not in gendered:
+                    word = word.lower()
                 newvec = self.project(word, direction)
                 newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
                 self.model[word] = newvec
         for w1, w2 in self.equalize_pairs:
-            if w1 not in self.model or w2 not in self.model:
+            if w1.lower() not in gendered and w1 not in gendered:
                 continue
+            else:
+                if w1.lower() in gendered and w1 not in gendered:
+                    w1 = w1.lower()
+            if w2.lower() not in gendered and w2 not in gendered:
+                continue
+            else:
+                if w2.lower() in gendered and w2 not in gendered:
+                    w2 = w2.lower()
             mu = (self.model[w1] + self.model[w2])/2
             muproj = self.project(mu, direction)
             v = mu - muproj
@@ -106,11 +116,16 @@ class WordEmbedding:
     def findBiasDirection(self):
         toFit = []
         for w1, w2 in self.definition_pairs:
-            if w1 not in self.model or w2 not in self.model:
-                print(w1, w2)
+            if w1.lower() not in self.definition_pairs and w1 not in self.definition_pairs:
                 continue
-            w1 = w1.lower()
-            w2 = w2.lower()
+            else:
+                if w1.lower() in self.definition_pairs and w1 not in self.definition_pairs:
+                    w1 = w1.lower()
+            if w2.lower() not in self.definition_pairs and w2 not in self.definition_pairs:
+                continue
+            else:
+                if w2.lower() in self.definition_pairs and w2 not in self.definition_pairs:
+                    w2 = w2.lower()
             #Find average between two vector pairs such as (man, woman) or (he, she)
             average = (self.model[w1] + self.model[w2])/2
             #Add the difference between the average of both vectors to list of vectors to do PCA with
@@ -144,4 +159,4 @@ def main():
     # print("Done")
     
         
-main()
+    main()
