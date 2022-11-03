@@ -1,7 +1,7 @@
 from __future__ import print_function, division
 import sys
 import argparse
-import wordembedding
+from we import *
 from sklearn.svm import LinearSVC
 import json
 if sys.version_info[0] < 3:
@@ -15,29 +15,33 @@ Tolga Bolukbasi, Kai-Wei Chang, James Zou, Venkatesh Saligrama, and Adam Kalai
 """
 
 parser = argparse.ArgumentParser()
+parser.add_argument("embedding_filename", help="The name of the embedding")
 parser.add_argument("NUM_TRAINING", type=int)
+parser.add_argument("GENDER_SPECIFIC_SEED_WORDS")
+parser.add_argument("outfile")
 
 args = parser.parse_args()
 
+embedding_filename = args.embedding_filename
 NUM_TRAINING = args.NUM_TRAINING
-GENDER_SPECIFIC_SEED_WORDS = "./data/gender_specific_seed_words.json"
-OUTFILE = "gender_specific_predict2.txt"
+GENDER_SPECIFIC_SEED_WORDS = args.GENDER_SPECIFIC_SEED_WORDS
+OUTFILE = args.outfile
 
 with open(GENDER_SPECIFIC_SEED_WORDS, "r") as f:
     gender_seed = json.load(f)
 
 print("Loading embedding...")
-E = wordembedding.WordEmbedding(isLinearSVM = True)
+E = WordEmbedding(embedding_filename)
 
-print("Embedding has {} words.".format(len(E.model.index_to_key)))
+print("Embedding has {} words.".format(len(E.words)))
 print("{} seed words from '{}' out of which {} are in the embedding.".format(
     len(gender_seed),
     GENDER_SPECIFIC_SEED_WORDS,
-    len([w for w in gender_seed if w in E.model.index_to_key]))
+    len([w for w in gender_seed if w in E.words]))
 )
 
-gender_seed = set(w for i, w in enumerate(E.model.index_to_key) if w in gender_seed or (w.lower() in gender_seed and i<NUM_TRAINING))
-labeled_train = [(i, 1 if w in gender_seed else 0) for i, w in enumerate(E.model.index_to_key) if (i<NUM_TRAINING or w in gender_seed)]
+gender_seed = set(w for i, w in enumerate(E.words) if w in gender_seed or (w.lower() in gender_seed and i<NUM_TRAINING))
+labeled_train = [(i, 1 if w in gender_seed else 0) for i, w in enumerate(E.words) if (i<NUM_TRAINING or w in gender_seed)]
 train_indices, train_labels = zip(*labeled_train)
 y = np.array(train_labels)
 X = np.array([E.vecs[i] for i in train_indices])
@@ -55,7 +59,7 @@ intercept = clf.intercept_
 
 is_gender_specific = (E.vecs.dot(clf.coef_.T) > -clf.intercept_)
 
-full_gender_specific = list(set([w for label, w in zip(is_gender_specific, E.model.index_to_key)
+full_gender_specific = list(set([w for label, w in zip(is_gender_specific, E.words)
                             if label]).union(gender_seed))
 full_gender_specific.sort(key=lambda w: E.index[w])
 
