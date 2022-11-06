@@ -91,13 +91,20 @@ class WordEmbedding:
             else:
                 if w2.lower() in gendered and w2 not in gendered:
                     w2 = w2.lower()
-            mu = (self.model[w1] + self.model[w2])/2
-            muproj = self.project(mu, direction)
-            v = mu - muproj
-            w1proj = self.project(w1, direction)
-            w2proj = self.project(w2, direction)
-            self.model[w1] = v + (np.sqrt((1 - np.linalg.norm(v)**2)) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj))
-            self.model[w2] = v + (np.sqrt((1 - np.linalg.norm(v)**2)) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj))
+            
+            y = self.drop(self.model[w1] + self.model[w2]/2, direction)
+            z = np.sqrt(1 - np.linalg.norm(y)**2)
+            if (self.model[w1] - self.model[w2]).dot(direction) < 0:
+                z = -z
+            self.model[w1] = z * direction + y
+            self.model[w2] = z * direction + y
+            # mu = (self.model[w1] + self.model[w2])/2
+            # muproj = self.project(mu, direction)
+            # v = mu - muproj
+            # w1proj = self.project(w1, direction)
+            # w2proj = self.project(w2, direction)
+            # self.model[w1] = v + (np.sqrt((1 - np.linalg.norm(v)**2)) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj))
+            # self.model[w2] = v + (np.sqrt((1 - np.linalg.norm(v)**2)) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj))
 
         self.norm()
         return None
@@ -115,6 +122,9 @@ class WordEmbedding:
             return np.dot(self.model[word], direction) * direction
         else: 
             return np.dot(word, direction) * direction
+    
+    def drop(self, u, v):
+        return u - v * u.dot(v) / v.dot(v)
 
     def findBiasDirection(self):
         toFit = []
