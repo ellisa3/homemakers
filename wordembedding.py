@@ -124,7 +124,7 @@ class WordEmbedding:
         
         toFit = np.array(toFit)
         pca = PCA(n_components=10)
-        pca.fit(toFit)#.reshape(1,-1)
+        pca.fit(toFit)
         return pca
     
     

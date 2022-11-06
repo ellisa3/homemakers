@@ -11,12 +11,12 @@ def rand_jitter(arr):
     stdev = .01 * (max(arr) - min(arr))
     return arr + (np.random.randn(len(arr)) * stdev*10)
 
-def display_pca_scatterplot_2D(we, words=None, sample=40):
+def display_pca_scatterplot_2D(we, words=None, sample=20):
 
-    if sample > 0:
-        words = np.random.choice(list(we.model.vocab.keys()), sample)
-    elif words == None:
-        words = [ word for word in we.model.vocab ]
+    # if sample > 0:
+    #     words.append(np.random.choice(list(we.model.key_to_index), sample))
+    # elif words == None:
+    #     words = [ word for word in we.model.key_to_index ]
     
     # print(words)
     word_vectors = np.array([we.model[w] for w in words])
@@ -47,10 +47,26 @@ def display_pca_scatterplot_2D(we, words=None, sample=40):
                     showlegend=False,
                     cliponaxis=True
                     )
-    he_she = go.Scatter()
+    
+    she_he = go.Scatter(
+                        x = np.array([-.5, .5]),
+                        y = np.array([-.004,-.004]),
+                        text = ["she", "he"],
+                        textposition = "middle center",
+                        textfont_size = 20,
+                        mode = 'text',
+                        marker = {
+                            'size': 1,
+                            'opacity': 1,
+                            'color': 'red'
+                        },
+                        showlegend= False,
+                        cliponaxis=True
+                        )
 
             
-    data.append(trace_inputz)    
+    data.append(trace_inputz)
+    data.append(she_he)    
     # Configure the layout
 
     layout = go.Layout(
@@ -62,14 +78,16 @@ def display_pca_scatterplot_2D(we, words=None, sample=40):
             family = " PT Sans Narrow ",
             size = 15),
         autosize = False,
-        width = 1000,
+        width = 2000,
         height = 1000,
+        plot_bgcolor= 'rgb(255,255,255)',
         xaxis=go.layout.XAxis(showgrid=False, zeroline=True, zerolinecolor='red', zerolinewidth=2, showticklabels=False, showline=False, griddash="longdash"),
         yaxis=go.layout.YAxis(showgrid=False, zeroline=True, zerolinecolor='red', zerolinewidth=2, showticklabels=False, showline=False)
     ) 
 
 
     plot_figure = go.Figure(data = data, layout = layout)
+    # plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
     plot_figure.show()
 
 
