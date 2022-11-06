@@ -19,8 +19,8 @@ class GenerateAnalogies:
         a = "he"
         b = "she"
         self.seedDirection = self.model[a] - self.model[b]
-        print("he/she: " , self.seedDirection)
-        print("she/he: ", self.model[b] - self.model[a])
+        #print("he/she: " , self.seedDirection)
+        #print("she/he: ", self.model[b] - self.model[a])
 
 
         return self.seedDirection
@@ -55,34 +55,29 @@ def main():
     ga = GenerateAnalogies()
     ga.findSeedSimilarity()
 
-    analogies = ga.generateAnalogies('/content/homemakers/data/parsed_occupations.txt')
+    #create analogies using word embedding without debiasing
+    analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
     i = 0
     print(analogies[i])
-    f = open('bias_analogies.txt', 'a')
+    f = open('data/bias_analogies.txt', 'w')
     i = 0
     for analogy in analogies:
       f.write(" ".join(analogy))
       f.write("\n")
 
-    # gender_neutral = []
-    # f = open("data/gender_neutral_predict.txt", 'r')
-    # words = f.readlines()
-    # for word in words:
-    #     word = word.strip() #remove \r\n 
-    #     gender_neutral.append(word)
+    #run debiasing on the word embedding
+    f = open("data/genderedPaper.json", 'r')
+    gender_neutral = json.load(f)
+    ga.we.debias(gender_neutral)
 
-    # f = open("data/genderedPaper.json", 'r')
-    # gender_neutral = json.load(f)
-    # ga.we.debias(gender_neutral)
-
-
-    # analogies = ga.generateAnalogies('/content/homemakers/data/parsed_occupations.txt')
-    # i = 0
-    # print(analogies[i])
-    # f = open('debias_analogies.txt', 'a')
-    # i = 0
-    # for analogy in analogies:
-    #   f.write(" ".join(analogy))
-    #   f.write("\n")
+    #create analogies using the debiased word embedding
+    analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
+    i = 0
+    print(analogies[i])
+    f = open('data/debias_analogies.txt', 'w')
+    i = 0
+    for analogy in analogies:
+      f.write(" ".join(analogy))
+      f.write("\n")
 
 main()
