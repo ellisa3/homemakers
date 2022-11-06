@@ -12,7 +12,7 @@ class FindDiffs:
 
   def find_diffs(self):
     gendered_theirs = set()
-    with open('./data/gender_specific_seed_words.json', "r") as f:
+    with open('./data/gender_specific_predict2', "r") as f:
         gendered_theirs = json.load(f)
 
     print("length of gendered_theirs", len(gendered_theirs))

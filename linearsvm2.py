@@ -1,3 +1,4 @@
+
 from __future__ import print_function, division
 import sys
 import argparse
@@ -21,8 +22,8 @@ parser.add_argument("NUM_TRAINING", type=int)
 args = parser.parse_args()
 
 NUM_TRAINING = args.NUM_TRAINING
-GENDER_SPECIFIC_SEED_WORDS = "./data/gender_specific_seed_words.json"
-OUTFILE = "gender_specific_predict2.txt"
+GENDER_SPECIFIC_SEED_WORDS = "/content/homemakers/data/gender_seed.json"
+OUTFILE = "/content/homemakers/data/Tgs_predict.txt"
 
 with open(GENDER_SPECIFIC_SEED_WORDS, "r") as f:
     gender_seed = json.load(f)
@@ -41,18 +42,17 @@ gender_seed = set(w for i, w in enumerate(E.model.index_to_key) if w in gender_s
 labeled_train = [(i, 1 if w in gender_seed else 0) for i, w in enumerate(E.model.index_to_key) if (i<NUM_TRAINING or w in gender_seed)]
 train_indices, train_labels = zip(*labeled_train)
 y = np.array(train_labels)
-# what is E.vecs[i] ? for i in train_indices? what is train_indices?
-# how do i go through the list of vectors
-vecs = [E.model[w] for w in E.model.index_to_key]
+
+vecs = np.array([E.model[w] for w in E.model.index_to_key])
 X = np.array([vecs[i] for i in train_indices])
 C = 1.0
 clf = LinearSVC(C=C, tol=0.0001)
 clf.fit(X, y)
-# what are the weights? i didn't do this part in my code
+print("x shape ", X.shape)
 weights = (0.5 / (sum(y)) * y + 0.5 / (sum(1 - y)) * (1 - y))
 weights = 1.0 / len(y)
 score = sum((clf.predict(X) == y) * weights)
-print(1 - score, sum(y) * 1.0 / len(y))
+# print(1 - score, sum(y) * 1.0 / len(y))
 
 pred = clf.coef_[0].dot(X.T)
 direction = clf.coef_[0]
@@ -66,3 +66,5 @@ full_gender_specific.sort(key=lambda w: E.index[w])
 
 with open(OUTFILE, "w") as f:
     json.dump(full_gender_specific, f)
+
+
