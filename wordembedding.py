@@ -17,6 +17,8 @@ class WordEmbedding:
         self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
         with open("./data/definition_pairs.json") as dpfile:
             self.definition_pairs = json.load(dpfile)
+        with open("./data/Scatterplot.json") as spfile:
+            self.scatterplot = json.load(spfile)
     
     def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
@@ -82,7 +84,6 @@ class WordEmbedding:
         return self.model
 
     def normOne(self, vector):
-        print(vector, np.linalg.norm(vector))
         return vector/np.linalg.norm(vector)#, axis=1)
     
     def project(self, word, direction):
@@ -111,7 +112,7 @@ class WordEmbedding:
         toFit = []
         for w1, w2 in definition_pairs:
             if w1 not in self.model.key_to_index or w2 not in self.model.key_to_index:
-                print('Word Not found')
+                print('Word Not found:')
                 continue
             w1 = w1.lower()
             w2 = w2.lower()
@@ -121,9 +122,7 @@ class WordEmbedding:
             toFit.append(self.normOne(self.model[w1] - average))
             toFit.append(self.normOne(self.model[w2] - average))
         
-        print("toFit:",toFit)
         toFit = np.array(toFit)
-        print("npArray:",toFit)
         pca = PCA(n_components=10)
         pca.fit(toFit)#.reshape(1,-1)
         return pca

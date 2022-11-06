@@ -23,14 +23,13 @@ cumulative_exp_var = np.cumsum(variance)
 print('cum_sum:', cumulative_exp_var)
 
 plt.bar(range(10), variance, align='edge', 
-        label='Individual explained variance') # Top 2 components should be ~70% (Currently ~63%) 
+        label='Individual explained variance') # Top 2 components should be ~70% (Currently ~75%) 
 
 plt.step(range(10), cumulative_exp_var, where='mid',
          label='Cumulative explained variance', color='red') # for red line that shows cumulative sum
 plt.ylabel('Explained variance percentage')
 plt.xlabel('Principal components')
-# plt.xticks(ticks=[])
-# plt.xticks(ticks=np.arange(0, 10, step=2)) /
+plt.xticks(ticks=np.arange(0,11,step=2))
 plt.legend(loc='best')
 plt.tight_layout()
 # plt.savefig("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations")
