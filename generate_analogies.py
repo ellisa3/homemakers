@@ -16,9 +16,11 @@ class GenerateAnalogies:
         
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
-        a = "she"
-        b = "he"
+        a = "he"
+        b = "she"
         self.seedDirection = self.model[a] - self.model[b]
+        print("he/she: " , self.seedDirection)
+        print("she/he: ", self.model[b] - self.model[a])
 
 
         return self.seedDirection
@@ -53,7 +55,7 @@ def main():
     ga = GenerateAnalogies()
     ga.findSeedSimilarity()
 
-    analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
+    analogies = ga.generateAnalogies('/content/homemakers/data/parsed_occupations.txt')
     i = 0
     print(analogies[i])
     f = open('bias_analogies.txt', 'a')
@@ -69,18 +71,18 @@ def main():
     #     word = word.strip() #remove \r\n 
     #     gender_neutral.append(word)
 
-    f = open("data/genderedPaper.json", 'r')
-    gender_neutral = json.load(f)
-    ga.we.debias(gender_neutral)
+    # f = open("data/genderedPaper.json", 'r')
+    # gender_neutral = json.load(f)
+    # ga.we.debias(gender_neutral)
 
 
-    analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
-    i = 0
-    print(analogies[i])
-    f = open('debias_analogies.txt', 'a')
-    i = 0
-    for analogy in analogies:
-      f.write(" ".join(analogy))
-      f.write("\n")
+    # analogies = ga.generateAnalogies('/content/homemakers/data/parsed_occupations.txt')
+    # i = 0
+    # print(analogies[i])
+    # f = open('debias_analogies.txt', 'a')
+    # i = 0
+    # for analogy in analogies:
+    #   f.write(" ".join(analogy))
+    #   f.write("\n")
 
 main()
