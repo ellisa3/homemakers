@@ -75,9 +75,8 @@ class WordEmbedding:
             else:
                 if word.lower() in gendered and word not in gendered:
                     word = word.lower()
-                newvec = self.project(word, direction)
-                newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
-                self.model[word] = newvec
+            newvec = self.project(word, direction)
+            self.model[word] = self.drop(self.model[word], direction)
         for w1, w2 in self.equalize_pairs:
             if (w1 not in self.model and w1.lower() not in self.model) or (w2 not in self.model and w2.lower() not in self.model):
               continue
