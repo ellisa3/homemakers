@@ -10,7 +10,7 @@ from config import fp
 
 embedding = we.WordEmbedding(fp)
 
-input_words = [('she','he'),('her','his'),('woman','man'),  ('herself', 'himself'), ('daughter', 'son'), ('mother', 'father'), ('gal','guy'),('girl','boy'),('female','male')] #Ten gendered pairs from figure 5 ('mary', 'john') removed bc not in our dataset,
+input_words = [('she','he'),('her','his'),('woman','man'),  ('herself', 'himself'), ('daughter', 'son'), ('mother', 'father'), ('gal','guy'),('girl','boy'),('female','male'), ("Mary", "John")] #Ten gendered pairs from figure 5 ('mary', 'john') removed bc not in our dataset,
 
 # print(input_vectors, len(input_vectors))
 
@@ -29,8 +29,8 @@ plt.step(range(10), cumulative_exp_var, where='mid',
          label='Cumulative explained variance', color='red') # for red line that shows cumulative sum
 plt.ylabel('Explained variance percentage')
 plt.xlabel('Principal components')
-plt.xticks(ticks=np.arange(0,11,step=2))
+plt.xticks(ticks=np.arange(0,11,step=1))
 plt.legend(loc='best')
 plt.tight_layout()
 plt.savefig("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/ExplainedVariancePlot.svg", format='svg')
-plt.show()
+# plt.show()
