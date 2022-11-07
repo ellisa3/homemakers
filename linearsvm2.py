@@ -54,15 +54,21 @@ weights = 1.0 / len(y)
 score = sum((clf.predict(X) == y) * weights)
 # print(1 - score, sum(y) * 1.0 / len(y))
 
-pred = clf.coef_[0].dot(X.T)
-direction = clf.coef_[0]
-intercept = clf.intercept_
+# pred = clf.coef_[0].dot(X.T)
+# direction = clf.coef_[0]
+# intercept = clf.intercept_
+print("here")
 
+# .dot(a, b)
+# Tndarray of shape (n_samples, n_classes)
+# Returns the probability of the sample for each class in the model. The columns correspond to the classes in sorted order, as they appear in the attribute classes_.
 is_gender_specific = (vecs.dot(clf.coef_.T) > -clf.intercept_)
+print("here1")
 
 full_gender_specific = list(set([w for label, w in zip(is_gender_specific, E.model.index_to_key)
                             if label]).union(gender_seed))
 full_gender_specific.sort(key=lambda w: E.index[w])
+print("here2")
 
 with open(OUTFILE, "w") as f:
     json.dump(full_gender_specific, f)

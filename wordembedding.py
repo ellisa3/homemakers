@@ -25,10 +25,10 @@ class WordEmbedding:
             word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
             glove2word2vec(glove_file, word2vec_glove_file) 
             self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
-            with open("./data/definition_pairs.json") as dpfile:
-                self.definition_pairs = json.load(dpfile)
-            with open("./data/equalize_pairs.json") as dpfile:
-                self.equalize_pairs = json.load(dpfile)
+            # with open("./data/definition_pairs.json") as dpfile:
+            #     self.definition_pairs = json.load(dpfile)
+            # with open("./data/equalize_pairs.json") as dpfile:
+            #     self.equalize_pairs = json.load(dpfile)
     
     def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)

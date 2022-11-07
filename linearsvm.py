@@ -6,7 +6,7 @@ from config import fp_subset
 
 
 GENDER_SEED_INFILE = '/content/homemakers/data/gender_seed.json'
-GS_OUTFILE = '/content/homemakerss/data/Ogs_predict.txt'
+GS_OUTFILE = '/content/homemakers/data/Ogs_predict.txt'
 GN_OUTFILE = '/content/homemakers/data/Ogn_predict.txt'
 gender_seed_words = set()
 
@@ -46,6 +46,7 @@ clf.fit(X, y)
 with open(GS_OUTFILE, "w") as gs_reader:
     with open(GN_OUTFILE, "w") as gn_reader:
         for word in we.model.index_to_key:
+          if word not in we_subset.model:
             test_value = np.array(we.model[word]).reshape((1, -1))
             y_pred = clf.predict(test_value)
             if y_pred == 1:
