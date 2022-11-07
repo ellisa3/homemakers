@@ -161,8 +161,6 @@ class WordEmbedding:
             if w1 not in self.model.key_to_index or w2 not in self.model.key_to_index:
                 print('Word Not found:')
                 continue
-            w1 = w1.lower()
-            w2 = w2.lower()
             #Find average between two vector pairs such as (man, woman) or (he, she)
             average = (self.model[w1] + self.model[w2])/2
             #Add the difference between the average of both vectors to list of vectors to do PCA with

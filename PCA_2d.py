@@ -2,7 +2,6 @@ import pickle
 from random import random
 import numpy as np
 import plotly.graph_objs as go
-import plotly.express as px
 from sklearn.decomposition import PCA
 import wordembedding as we
 
@@ -25,8 +24,6 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
     gender_subspace = we.doPCA(we.definition_pairs).transform(word_vectors)[:,:2] #x dimension in the gender bias direction (.compintnts)
 
     # print(gender_subspace)
-    
-    ## (Axis orthogonal to gender direction)??
     data = []
     count = 0
 
@@ -91,10 +88,9 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
     plot_figure.show()
 
 
-
+input_words=[]
 embedding = we.WordEmbedding('/Users/darrylyork3/Desktop/Comps22/homemakers/data/w2v_gnews_small.txt')
 
-input_words = ['actress', 'aunt', 'leopard', 'bachelor', 'in', 'for', 'in']
 numwords=0
 for word in embedding.scatterplot:
     print(word)
