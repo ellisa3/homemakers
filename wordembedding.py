@@ -73,33 +73,24 @@ class WordEmbedding:
 
         #Loop over words and debias them if they're gendered
         for word in self.model.index_to_key:
-            if word.lower() not in gendered and word not in gendered:
+            if word in gendered:
                 continue
-            else:
-                if word.lower() in gendered and word not in gendered:
-                    word = word.lower()
             self.model[word] = self.drop(self.model[word], direction)
-
+        
+        candidates = []
         for w1, w2 in self.equalize_pairs:
-            if (w1 not in self.model and w1.lower() not in self.model) or (w2 not in self.model and w2.lower() not in self.model):
+            candidates.append((w1.lower(), w2.lower()))
+            candidates.append((w1.upper(), w2.upper()))
+            candidates.append((w1.title(), w2.title()))
+        for w1, w2 in candidates:
+            if (w1 not in self.model) or (w2 not in self.model):
               continue
-            if w1.lower() not in gendered and w1 not in gendered:
-                continue
-            else:
-                if w1.lower() in gendered and w1 not in gendered:
-                    w1 = w1.lower()
-            if w2.lower() not in gendered and w2 not in gendered:
-                continue
-            else:
-                if w2.lower() in gendered and w2 not in gendered:
-                    w2 = w2.lower()
-            
             y = self.drop((self.model[w1] + self.model[w2])/2, direction)
             z = np.sqrt(1 - np.linalg.norm(y)**2)
             if (self.model[w1] - self.model[w2]).dot(direction) < 0:
                 z = -z
             self.model[w1] = z * direction + y
-            self.model[w2] = z * direction + y
+            self.model[w2] = -z * direction + y
             # mu = (self.model[w1] + self.model[w2])/2
             # muproj = self.project(mu, direction)
             # v = mu - muproj
@@ -172,24 +163,28 @@ class WordEmbedding:
 
 def main():
     we = WordEmbedding("/Users/aldopolanco/homemakers/data/w2v_gnews_small.txt")
-    print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    print("Man + nurse:", we.model.distance("man", "nurse"))
-    # # print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    # # print("Man + nurse:", we.model.distance("man", "nurse"))
-    # # print("Man + boy:", we.model.distance("man", "actor"))
-    # # print("Woman + boy:", we.model.distance("woman", "actress"))
+    diff = we.normOne(we.model["handbag"] - we.model["she"])
+    softball = we.normOne(we.normOne(we.model["he"]) + diff)
+    print("diff:", we.model.similar_by_vector(diff, topn=3))
+    print("should be softball:", we.model.similar_by_vector(softball, topn=3))
+    print("woman:", we.model.distance("woman", "homemaker"))
+    print("man:", we.model.distance("man", "homemaker"))
 
-    specific = open("data/gender_specific_seed_words.json")
+    specific = open("data/genderedPaper.json")
     specificwords = json.load(specific)
     #specificwords = [word.lower() for word in specificwords]
     we.debias(specificwords)
     print("NEUTRALIZED")
-    print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    print("Man + nurse:", we.model.distance("man", "nurse"))
-    # print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    # print("Man + nurse:", we.model.distance("man", "nurse"))
-    # print("Man + boy:", we.model.distance("man", "actor"))
-    # print("Woman + boy:", we.model.distance("woman", "actress"))
-    # print("Done")
+    diff = we.normOne(we.model["handbag"] - we.model["she"])
+    softball = we.normOne(we.model["he"] + diff)
+    print("diff:", we.model.similar_by_vector(diff, topn=3))
+    print("should be softball:", we.model.similar_by_vector(softball, topn=3))
+    print("woman:", we.model.distance("woman", "homemaker"))
+    print("man:", we.model.distance("man", "homemaker"))
+
+
+
+    
+    print("Done")
     
 #main()
