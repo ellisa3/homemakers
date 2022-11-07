@@ -71,7 +71,7 @@ def main():
     ga.we.debias(gender_neutral)
 
     #create analogies using the debiased word embedding
-    analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
+    analogies = ga.generateAnalogies('/content/homemakers/data/after_x.txt')
     i = 0
     print(analogies[i])
     f = open('data/debias_analogies.txt', 'w')

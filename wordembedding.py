@@ -78,8 +78,6 @@ class WordEmbedding:
             else:
                 if word.lower() in gendered and word not in gendered:
                     word = word.lower()
-
-            newvec = self.project(word, direction)
             self.model[word] = self.drop(self.model[word], direction)
 
         for w1, w2 in self.equalize_pairs:
@@ -96,7 +94,7 @@ class WordEmbedding:
                 if w2.lower() in gendered and w2 not in gendered:
                     w2 = w2.lower()
             
-            y = self.drop(self.model[w1] + self.model[w2]/2, direction)
+            y = self.drop((self.model[w1] + self.model[w2])/2, direction)
             z = np.sqrt(1 - np.linalg.norm(y)**2)
             if (self.model[w1] - self.model[w2]).dot(direction) < 0:
                 z = -z
@@ -173,27 +171,25 @@ class WordEmbedding:
         return pca
 
 def main():
-    # we = WordEmbedding(fp)
-    # # print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    # # print("Man + doctor:", we.model.distance("man", "doctor"))
+    we = WordEmbedding("/Users/aldopolanco/homemakers/data/w2v_gnews_small.txt")
+    print("Woman + nurse:", we.model.distance("woman", "nurse"))
+    print("Man + nurse:", we.model.distance("man", "nurse"))
     # # print("Woman + nurse:", we.model.distance("woman", "nurse"))
     # # print("Man + nurse:", we.model.distance("man", "nurse"))
     # # print("Man + boy:", we.model.distance("man", "actor"))
     # # print("Woman + boy:", we.model.distance("woman", "actress"))
 
-    # specific = open("data/gender_specific_seed_words.json")
-    # specificwords = json.load(specific)
-    # specificwords = [word.lower() for word in specificwords]
-    # we.debias(specificwords)
-    
-    # print("NEUTRALIZED")
-    # print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    # print("Man + doctor:", we.model.distance("man", "doctor"))
+    specific = open("data/gender_specific_seed_words.json")
+    specificwords = json.load(specific)
+    #specificwords = [word.lower() for word in specificwords]
+    we.debias(specificwords)
+    print("NEUTRALIZED")
+    print("Woman + nurse:", we.model.distance("woman", "nurse"))
+    print("Man + nurse:", we.model.distance("man", "nurse"))
     # print("Woman + nurse:", we.model.distance("woman", "nurse"))
     # print("Man + nurse:", we.model.distance("man", "nurse"))
     # print("Man + boy:", we.model.distance("man", "actor"))
     # print("Woman + boy:", we.model.distance("woman", "actress"))
     # print("Done")
     
-        
-    main()
+#main()
