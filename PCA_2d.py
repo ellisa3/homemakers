@@ -1,108 +1,105 @@
 import pickle
-from pyexpat import model
 from random import random
-import plotly # pip install plotly
 import numpy as np
 import plotly.graph_objs as go
+import plotly.express as px
 from sklearn.decomposition import PCA
-from wordembedding import wordEmbedding as we
+import wordembedding as we
 
-def display_pca_scatterplot_3D(model, user_input=None, words=None, label=None, color_map=None, topn=5, sample=10):
 
-    if words == None:
-        if sample > 0:
-            words = np.random.choice(list(model.vocab.keys()), sample)
-        else:
-            words = [ word for word in model.vocab ]
+def rand_jitter(arr):
+    stdev = .01 * (max(arr) - min(arr))
+    return arr + (np.random.randn(len(arr)) * stdev*10)
+
+def display_pca_scatterplot_2D(we, words=None, sample=20):
+
+    # if sample > 0:
+    #     words.append(np.random.choice(list(we.model.key_to_index), sample))
+    # elif words == None:
+    #     words = [ word for word in we.model.key_to_index ]
     
-    word_vectors = np.array([model[w] for w in words])
-    
-    two_dim = PCA(random_state=0).fit_transform(word_vectors)[:,:2]
+    # print(words)
+    word_vectors = np.array([we.model[w] for w in words])
 
+    
+    gender_subspace = we.doPCA(we.definition_pairs).transform(word_vectors)[:,:2] #x dimension in the gender bias direction (.compintnts)
+
+    # print(gender_subspace)
+    
+    ## (Axis orthogonal to gender direction)??
     data = []
     count = 0
-    
-    for i in range (len(user_input)):
 
-                trace = go.Scatter(
-                    x = two_dim[count:count+topn,0], 
-                    y = two_dim[count:count+topn,1],  
-                    text = words[count:count+topn],
-                    name = user_input[i],
-                    textposition = "top center",
-                    textfont_size = 20,
-                    mode = 'markers+text',
-                    marker = {
-                        'size': 10,
-                        'opacity': 0.8,
-                        'color': 2
-                    }
-       
-                )
-                
-                # For 2D, instead of using go.Scatter3d, we need to use go.Scatter and delete the z variable. Also, instead of using variable three_dim, use the variable that we have declared earlier (e.g two_dim)
-            
-                data.append(trace)
-                count = count+topn
-
-    trace_input = go.Scatter(
-                    x = two_dim[count:,0], 
-                    y = two_dim[count:,1],  
+    # plot inputs, edits to shape of markers 
+    trace_inputz = go.Scatter(
+                    x = rand_jitter(gender_subspace[count:,0]), 
+                    y = rand_jitter(gender_subspace[count:,1]),  
                     text = words[count:],
-                    name = 'input words',
-                    textposition = "top center",
+                    # name = 'input words',
+                    textposition = "middle center",
                     textfont_size = 20,
-                    mode = 'markers+text',
+                    mode = 'text',
                     marker = {
-                        'size': 10,
+                        'size': 1,
                         'opacity': 1,
                         'color': 'black'
-                    }
+                    },
+                    showlegend=False,
+                    cliponaxis=True
                     )
+    
+    she_he = go.Scatter(
+                        x = np.array([-.5, .5]),
+                        y = np.array([-.004,-.004]),
+                        text = ["she", "he"],
+                        textposition = "middle center",
+                        textfont_size = 20,
+                        mode = 'text',
+                        marker = {
+                            'size': 1,
+                            'opacity': 1,
+                            'color': 'red'
+                        },
+                        showlegend= False,
+                        cliponaxis=True
+                        )
 
-    # For 2D, instead of using go.Scatter3d, we need to use go.Scatter and delete the z variable.  Also, instead of using variable three_dim, use the variable that we have declared earlier (e.g two_dim)
             
-    data.append(trace_input)    
+    data.append(trace_inputz)
+    data.append(she_he)    
     # Configure the layout
 
     layout = go.Layout(
-        margin = {'l': 0, 'r': 0, 'b': 0, 't': 0},
-        showlegend=True,
-        legend=dict(
-        x=1,
-        y=0.5,
-        font=dict(
-            family="Courier New",
-            size=25,
-            color="black"
-        )),
+        margin = {'l': 50, 'r': 50, 'b':50, 't': 50},
+        showlegend=False,
+        # legend=dict(x=1,y=0.5,font=dict(family="Courier New",size=25,color="black")),
         font = dict(
-            family = " Courier New ",
+            color = "black",
+            family = " PT Sans Narrow ",
             size = 15),
         autosize = False,
-        width = 1000,
-        height = 1000
-        )
+        width = 2000,
+        height = 1000,
+        plot_bgcolor= 'rgb(255,255,255)',
+        xaxis=go.layout.XAxis(showgrid=False, zeroline=True, zerolinecolor='red', zerolinewidth=2, showticklabels=False, showline=False, griddash="longdash"),
+        yaxis=go.layout.YAxis(showgrid=False, zeroline=True, zerolinecolor='red', zerolinewidth=2, showticklabels=False, showline=False)
+    ) 
 
 
     plot_figure = go.Figure(data = data, layout = layout)
+    plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
     plot_figure.show()
-    
-def format_plot_data(plot_data, input_words):
-    user_input = [x.strip() for x in input_words.split(',')]
-    similar_word = [word[0] for word in plot_data]
-    similarity = [word[1] for word in plot_data] 
-    similar_word.extend(user_input)
-    labels = [word[2] for word in plot_data]
-    label_dict = dict([(y,x+1) for x,y in enumerate(set(labels))]) #??
-    color_map = [label_dict[x] for x in labels]
-    return [user_input, similar_word,similarity,labels,label_dict, color_map]
 
-# display_pca_scatterplot_3D(model, user_input, similar_word, labels, color_map)
-model = we('/Users/darrylyork3/Desktop/Comps22/w2vData/w2v_gnews_small.txt')
 
-sim_words = we.generateNSimilar(model, input_words, 2) # Work on this 
 
-plot_data = format_plot_data(sim_words, input_words)
+embedding = we.WordEmbedding('/Users/darrylyork3/Desktop/Comps22/homemakers/data/w2v_gnews_small.txt')
 
-display_pca_scatterplot_3D(model, plot_data[0], plot_data[1], plot_data[2], plot_data[3])
+input_words = ['actress', 'aunt', 'leopard', 'bachelor', 'in', 'for', 'in']
+numwords=0
+for word in embedding.scatterplot:
+    print(word)
+    if word in embedding.model.key_to_index: 
+        input_words.append(word)
+        numwords+=1
+print(numwords)
+display_pca_scatterplot_2D(embedding, words=input_words)

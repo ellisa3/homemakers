@@ -29,6 +29,9 @@ class WordEmbedding:
                 self.definition_pairs = json.load(dpfile)
             with open("./data/equalize_pairs.json") as dpfile:
                 self.equalize_pairs = json.load(dpfile)
+            with open("./data/Scatterplot.json") as spfile:
+                self.scatterplot = json.load(spfile)
+
     
     def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
         result = self.model.similar_by_word(sampleWord)
@@ -76,6 +79,7 @@ class WordEmbedding:
                 if word.lower() in gendered and word not in gendered:
                     word = word.lower()
             self.model[word] = self.drop(self.model[word], direction)
+
         for w1, w2 in self.equalize_pairs:
             if (w1 not in self.model and w1.lower() not in self.model) or (w2 not in self.model and w2.lower() not in self.model):
               continue
@@ -147,7 +151,26 @@ class WordEmbedding:
         toFit = np.array(toFit)
         pca = PCA(10)
         pca.fit(toFit)
-        return pca.components_[0]   
+        return pca.components_[0]
+        
+    def doPCA(self, definition_pairs):
+        toFit = []
+        for w1, w2 in definition_pairs:
+            if w1 not in self.model.key_to_index or w2 not in self.model.key_to_index:
+                print('Word Not found:')
+                continue
+            w1 = w1.lower()
+            w2 = w2.lower()
+            #Find average between two vector pairs such as (man, woman) or (he, she)
+            average = (self.model[w1] + self.model[w2])/2
+            #Add the difference between the average of both vectors to list of vectors to do PCA with
+            toFit.append(self.normOne(self.model[w1] - average))
+            toFit.append(self.normOne(self.model[w2] - average))
+
+        toFit = np.array(toFit)
+        pca = PCA(n_components=10)
+        pca.fit(toFit)
+        return pca
 
 def main():
     we = WordEmbedding("/Users/aldopolanco/homemakers/data/w2v_gnews_small.txt")

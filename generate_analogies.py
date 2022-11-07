@@ -16,8 +16,8 @@ class GenerateAnalogies:
         
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
-        a = "he"
-        b = "she"
+        a = "she"
+        b = "he"
         self.seedDirection = self.model[a] - self.model[b]
         #print("he/she: " , self.seedDirection)
         #print("she/he: ", self.model[b] - self.model[a])
