@@ -194,4 +194,4 @@ def main():
     # print("Woman + boy:", we.model.distance("woman", "actress"))
     # print("Done")
     
-main()
+#main()
