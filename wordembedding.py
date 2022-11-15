@@ -162,25 +162,25 @@ class WordEmbedding:
         return pca
 
 def main():
-    we = WordEmbedding("/Users/aldopolanco/homemakers/data/w2v_gnews_small.txt")
-    diff = we.normOne(we.model["handbag"] - we.model["she"])
-    softball = we.normOne(we.normOne(we.model["he"]) + diff)
-    print("diff:", we.model.similar_by_vector(diff, topn=3))
-    print("should be softball:", we.model.similar_by_vector(softball, topn=3))
-    print("woman:", we.model.distance("woman", "homemaker"))
-    print("man:", we.model.distance("man", "homemaker"))
+    we = WordEmbedding("content/homemakers/data/w2v_gnews_vsmall.txt")
+    # diff = we.normOne(we.model["handbag"] - we.model["she"])
+    # softball = we.normOne(we.normOne(we.model["he"]) + diff)
+    # print("diff:", we.model.similar_by_vector(diff, topn=3))
+    # print("should be softball:", we.model.similar_by_vector(softball, topn=3))
+    # print("woman:", we.model.distance("woman", "homemaker"))
+    # print("man:", we.model.distance("man", "homemaker"))
 
-    specific = open("data/genderedPaper.json")
-    specificwords = json.load(specific)
-    #specificwords = [word.lower() for word in specificwords]
-    we.debias(specificwords)
-    print("NEUTRALIZED")
-    diff = we.normOne(we.model["handbag"] - we.model["she"])
-    softball = we.normOne(we.model["he"] + diff)
-    print("diff:", we.model.similar_by_vector(diff, topn=3))
-    print("should be softball:", we.model.similar_by_vector(softball, topn=3))
-    print("woman:", we.model.distance("woman", "homemaker"))
-    print("man:", we.model.distance("man", "homemaker"))
+    # specific = open("data/genderedPaper.json")
+    # specificwords = json.load(specific)
+    # #specificwords = [word.lower() for word in specificwords]
+    # we.debias(specificwords)
+    # print("NEUTRALIZED")
+    # diff = we.normOne(we.model["handbag"] - we.model["she"])
+    # softball = we.normOne(we.model["he"] + diff)
+    # print("diff:", we.model.similar_by_vector(diff, topn=3))
+    # print("should be softball:", we.model.similar_by_vector(softball, topn=3))
+    # print("woman:", we.model.distance("woman", "homemaker"))
+    # print("man:", we.model.distance("man", "homemaker"))
 
 
 
