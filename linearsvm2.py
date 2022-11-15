@@ -1,3 +1,4 @@
+
 from __future__ import print_function, division
 import sys
 import argparse
@@ -60,16 +61,53 @@ print("here")
 
 # .dot(a, b)
 # Tndarray of shape (n_samples, n_classes)
-# Returns the probability of the sample for each class in the model. The columns correspond to the classes in sorted order, as they appear in the attribute classes_.
-is_gender_specific = (vecs.dot(clf.coef_.T) > -clf.intercept_)
-print("here1")
+vecs_len = len(vecs)
+v_1_i = vecs_len // 5
+v_2_i = (vecs_len //5) * 2
+v_3_i = (vecs_len //5) * 3
+v_4_i = (vecs_len //5) * 4
 
-full_gender_specific = list(set([w for label, w in zip(is_gender_specific, E.model.index_to_key)
+vecs_one = vecs[0:v_1_i]
+vecs_two = vecs[v_1_i:v_2_i]
+vecs_three = vecs[v_2_i:v_3_i]
+vecs_four = vecs[v_3_i:v_4_i]
+vecs_five = vecs[v_4_i:(vecs_len + 1)]
+
+
+is_gender_specific1 = (vecs_one.dot(clf.coef_.T) > -clf.intercept_)
+is_gender_specific2 = (vecs_two.dot(clf.coef_.T) > -clf.intercept_)
+is_gender_specific3 = (vecs_three.dot(clf.coef_.T) > -clf.intercept_)
+is_gender_specific4 = (vecs_four.dot(clf.coef_.T) > -clf.intercept_)
+is_gender_specific5 = (vecs_five.dot(clf.coef_.T) > -clf.intercept_)
+print(type(is_gender_specific1))
+
+full_gender_specific1 = list(set([w for label, w in zip(is_gender_specific1, E.model.index_to_key)
                             if label]).union(gender_seed))
-full_gender_specific.sort(key=lambda w: E.index[w])
-print("here2")
+full_gender_specific1.sort(key=lambda w: E.index[w])
 
-with open(OUTFILE, "w") as f:
-    json.dump(full_gender_specific, f)
+full_gender_specific2 = list(set([w for label, w in zip(is_gender_specific2, E.model.index_to_key)
+                            if label]).union(gender_seed))
+full_gender_specific2.sort(key=lambda w: E.index[w])
 
+full_gender_specific3 = list(set([w for label, w in zip(is_gender_specific3, E.model.index_to_key)
+                            if label]).union(gender_seed))
+full_gender_specific3.sort(key=lambda w: E.index[w])
 
+full_gender_specific4 = list(set([w for label, w in zip(is_gender_specific4, E.model.index_to_key)
+                            if label]).union(gender_seed))
+full_gender_specific4.sort(key=lambda w: E.index[w])
+
+full_gender_specific5 = list(set([w for label, w in zip(is_gender_specific5, E.model.index_to_key)
+                            if label]).union(gender_seed))
+full_gender_specific5.sort(key=lambda w: E.index[w])
+
+full_gender_specific = np.concatenate(full_gender_specific1, full_gender_specific2, full_gender_specific3, full_gender_specific4, full_gender_specific5)
+
+# print(len(full_gender_specific1) + len(full_gender_specific2) + len(full_gender_specific3) + len(full_gender_specific4) + len(full_gender_specific5))
+
+with open(OUTFILE, "a") as f:
+    json.dump(full_gender_specific1, f)
+    json.dump(full_gender_specific2, f)
+    json.dump(full_gender_specific3, f)
+    json.dump(full_gender_specific4, f)
+    json.dump(full_gender_specific5, f)
