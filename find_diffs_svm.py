@@ -18,10 +18,10 @@ class FindDiffs:
 
     with open('./data/Tgs_predict.txt', "r") as f:
         gendered_theirs = json.load(f)
-
-    gendered_ours = set(line.strip() for line in open('./data/Ogs_predict2.txt'))
+    diffs = ['Dad', 'Mama', 'Uncle', 'Brother', 'Son', 'Viagra', 'She', 'Ladies', 'Ma', 'Sons', 'Prince', 'Female', 'Lions', 'Spokesman', 'King', 'PA', 'Mom', 'Sisters', 'Boys', 'MAN', 'Girls', 'Mothers', 'HE', 'Mother', 'Lady', 'Lion', 'Guy', 'Male', 'Brotherhood', 'Sir', 'Women', 'Princess', 'Father', 'Councilwoman', 'Colts', 'Men', 'Daddy', 'His', 'Brothers', 'Deer', 'Beard', 'Man', 'Bull', 'Girl', 'Husband', 'Wife', 'Queen', 'Queens', 'Bachelor', 'Councilman', 'Statesman', 'Grandma', 'Bulls', 'Sister', 'Actress', 'Chairman', 'Congressman', 'MA', 'Him', 'Daughter', 'Woman', 'Boy', 'He', 'Monk', 'Her', 'Kings']
+    gendered_ours = list(set(line.strip() for line in open('./data/Ogs_predict2.txt')))
     # gendered_theirs = set(line.strip() for line in open('./data/Tgs_predict.txt'))
-    
+    gendered_ours = set(gendered_ours + diffs)
 
     # gendered_ours1 = set(line.strip() for line in open('./data/Ogs_predict.txt'))
     print("length of gendered theirs", len(gendered_theirs))
