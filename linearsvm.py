@@ -51,6 +51,11 @@ print("{} seed words from '{}' out of which {} are in the embedding.".format(
     len([w for w in gender_seed_words if w in we.model.index_to_key]))
 )
 
+gender_seed_words = list(set(w for i, w in enumerate(we.model.index_to_key) if w in gender_seed_words or (w.lower() in gender_seed_words and i<27000)))
+# with open("our_gender_seed.json", "w") as f:
+#   json.dump(gender_seed_words, f)
+
+
 X = []
 y = []
 for word in we_subset_list:
@@ -66,9 +71,17 @@ X=np.array(X)
 print("x shape ", X.shape)
 y=np.array(y)
 
+
+
+
 c = 1.0
 clf = svm.LinearSVC(C = c)
 clf.fit(X, y)
+
+np.savetxt("clf_coef_ours.txt", clf.coef_)
+np.savetxt("clf_intercept_ours.txt", clf.intercept_) 
+sys.exit()
+
 
 with open(GS_OUTFILE, "w") as gs_reader:
     with open(GN_OUTFILE, "w") as gn_reader:
