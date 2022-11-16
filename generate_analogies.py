@@ -2,10 +2,11 @@ from io import StringIO
 import numpy as np
 import wordembedding
 import json
+import time
 
 def data_load():
   global we 
-  we = wordembedding.WordEmbedding(fp = "/content/homemakers/data/w2v_gnews_vsmall.txt", isLinearSVM = False)
+  we = wordembedding.WordEmbedding(fp = "/content/homemakers/data/w2v_gnews_small.txt", isLinearSVM = False)
 
 data_load()
 
@@ -21,14 +22,14 @@ class GenerateAnalogies:
         
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
-        a = "she"
-        b = "he"
+        a = "he"
+        b = "she"
         self.seedDirection = self.model[a] - self.model[b]
         #print("he/she: " , self.seedDirection)
         #print("she/he: ", self.model[b] - self.model[a])
         return self.seedDirection
         
-    def generateAnalogies(self, filename):        
+    def generateAnalogies(self):        
         analogies = []
         j = 0
         for w in self.model.index_to_key:
@@ -62,28 +63,46 @@ def main():
     ga.findSeedSimilarity()
 
     #create analogies using word embedding without debiasing
-    analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
+    start = time.time()
+    analogies = ga.generateAnalogies()
+    end = time.time()
+    print("analogies before:" + str(end - start))
     i = 0
-    print(analogies[i])
-    f = open('data/beforeAnalogies.txt', 'w')
+    # print(analogies[i])
+    f = open('data/before_analogies', 'w')
     i = 0
     for analogy in analogies:
+      #print(analogy)
       f.write(' '.join(analogy))
       f.write("\n")
-
+    f.close()
     #run debiasing on the word embedding
-    f = open("data/genderedPaper.json", 'r')
-    gender_neutral = json.load(f)
-    ga.we.debias(gender_neutral)
 
+    start = time.time()
+    fp = open('/content/homemakers/data/gender_specific_full.json')
+    gender_neutral = json.load(fp)
+    end = time.time()
+    print("svm: " + str(end - start))
+
+    start = time.time()
+    ga.we.debias(gender_neutral)
+    end = time.time()
+    print("debias: " + str(end - start))
     #create analogies using the debiased word embedding
-    analogies = ga.generateAnalogies('/content/homemakers/data/after_x.txt')
+    start = time.time()
+    analogies = ga.generateAnalogies()
+    end = time.time()
+    print("analogies after:" + str(end - start))
     i = 0
-    print(analogies[i])
-    f = open('data/afterAnalogies.txt', 'w')
+    # print(analogies[i])
+    f = open('data/he_she_after_analogies.txt', 'w')
     i = 0
     for analogy in analogies:
-      f.write(analogy)
+      #print(analogy)
+      f.write(' '.join(analogy))
+      #f.write(analogy[0] + ", " + analogy[1] + ", " + analogy[0])
       f.write("\n")
+    f.close()
+    print("done")
 
 main()
