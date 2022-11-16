@@ -28,10 +28,10 @@ class WordEmbedding:
             word2vec_glove_file = get_tmpfile("w2v_paper.txt") 
             glove2word2vec(glove_file, word2vec_glove_file) 
             self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
-            # with open("./data/definition_pairs.json") as dpfile:
-            #     self.definition_pairs = json.load(dpfile)
-            # with open("./data/equalize_pairs.json") as dpfile:
-            #     self.equalize_pairs = json.load(dpfile)
+            with open("./data/definition_pairs.json") as dpfile:
+                self.definition_pairs = json.load(dpfile)
+            with open("./data/equalize_pairs.json") as dpfile:
+                self.equalize_pairs = json.load(dpfile)
 
         self.index = {w: i for i, w in enumerate(self.model.index_to_key)}
     
@@ -39,6 +39,9 @@ class WordEmbedding:
         result = self.model.similar_by_word(sampleWord)
         most_similar_key, similarity = result[0]  # look at the first match
         return (most_similar_key, similarity)
+
+    def drop(self, u, v):
+        return u - v * u.dot(v) / v.dot(v)
     
     def generateNSimilar(self, input_words, num_sim):
         ## Generate a list of n similar words to a list of input words
@@ -75,14 +78,11 @@ class WordEmbedding:
 
         #Loop over words and debias them if they're gendered
         for word in self.model.index_to_key:
-            if word.lower() not in gendered and word not in gendered:
+            if word in gendered:
                 continue
-            else:
-                if word.lower() in gendered and word not in gendered:
-                    word = word.lower()
-                newvec = self.project(word, direction)
-                newvec = (self.model[word] - newvec)/np.linalg.norm(self.model[word] - newvec)
-                self.model[word] = newvec
+            self.model[word] = self.drop(self.model[word], direction)
+        
+        candidates = []
         for w1, w2 in self.equalize_pairs:
             if (w1 not in self.model and w1.lower() not in self.model) or (w2 not in self.model and w2.lower() not in self.model):
               continue

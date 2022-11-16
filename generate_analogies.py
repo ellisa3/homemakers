@@ -2,6 +2,7 @@ from io import StringIO
 import numpy as np
 import wordembedding
 import json
+import time
 
 def data_load():
   global we 
@@ -28,7 +29,7 @@ class GenerateAnalogies:
         #print("she/he: ", self.model[b] - self.model[a])
         return self.seedDirection
         
-    def generateAnalogies(self, filename):        
+    def generateAnalogies(self):        
         analogies = []
         j = 0
         for w in self.model.index_to_key:
@@ -62,30 +63,45 @@ def main():
     ga.findSeedSimilarity()
 
     #create analogies using word embedding without debiasing
-    analogies = ga.generateAnalogies('/content/homemakers/data/before_x.txt')
-    i = 0
-    # print(analogies[i])
-    f = open('data/beforeAnalogies_aishwarya.txt', 'w')
-    i = 0
-    for analogy in analogies:
-      f.write(' '.join(analogy))
-      f.write("\n")
-
+    # start = time.time()
+    # analogies = ga.generateAnalogies()
+    # end = time.time()
+    # print("analogies before:" + str(end - start))
+    # i = 0
+    # # print(analogies[i])
+    # f = open('data/before_analogies', 'w')
+    # i = 0
+    # for analogy in analogies:
+    #   #print(analogy)
+    #   f.write(' '.join(analogy))
+    #   f.write("\n")
+    # f.close()
     #run debiasing on the word embedding
-    
-    gender_neutral = set(line.strip() for line in open('/content/homemakers/0gn_predict.txt'))
-    ga.we.debias(gender_neutral)
 
+    start = time.time()
+    gender_neutral = set(line.strip() for line in open('/content/homemakers/data/Ogn_predict.txt'))
+    end = time.time()
+    print("svm: " + str(end - start))
+
+    start = time.time()
+    ga.we.debias(gender_neutral)
+    end = time.time()
+    print("debias: " + str(end - start))
     #create analogies using the debiased word embedding
-    analogies = ga.generateAnalogies('/content/homemakers/data/after_x.txt')
+    start = time.time()
+    analogies = ga.generateAnalogies()
+    end = time.time()
+    print("analogies after:" + str(end - start))
     i = 0
     # print(analogies[i])
-    f = open('data/afterAnalogies_aishwarya.txt', 'w')
+    f = open('data/after_analogies.txt', 'w')
     i = 0
     for analogy in analogies:
-      f.write(analogy)
+      #print(analogy)
+      f.write(' '.join(analogy))
+      #f.write(analogy[0] + ", " + analogy[1] + ", " + analogy[0])
       f.write("\n")
-
+    f.close()
     print("done")
 
 main()
