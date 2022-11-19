@@ -32,44 +32,8 @@ class WordEmbedding:
                 self.definition_pairs = json.load(dpfile)
             with open("./data/equalize_pairs.json") as dpfile:
                 self.equalize_pairs = json.load(dpfile)
-
-        self.index = {w: i for i, w in enumerate(self.model.index_to_key)}
-    
-    def generateOneSimilar(self, sampleWord): #this function exists in keyedVectors, most_similar() (set param N to 1 to get most similar word) line 776 of documentation
-        result = self.model.similar_by_word(sampleWord)
-        most_similar_key, similarity = result[0]  # look at the first match
-        return (most_similar_key, similarity)
-
-    def drop(self, u, v):
-        return u - v * u.dot(v) / v.dot(v)
-    
-    def generateNSimilar(self, input_words, num_sim):
-        ## Generate a list of n similar words to a list of input words
-        def append_list(sim_words, words):
-            list_of_words = []
-            
-            for i in range(len(sim_words)): # Create tuple of words & similarity
-                
-                sim_words_list = list(sim_words[i])
-                sim_words_list.append(words)
-                sim_words_tuple = tuple(sim_words_list)
-                list_of_words.append(sim_words_tuple)
-
-            print("list of words", list_of_words)    
-            return list_of_words
-        
-        user_input = [word.strip() for word in input_words.split(',')]
-        result_words = []
-
-        for words in user_input:
-            sim_words = self.model.most_similar(words, topn = num_sim)
-            sim_words = append_list(sim_words, words)
-            result_words.extend(sim_words)
-
-        # most_similar_keys = [word[0] for word in result_words]
-        # similarity = [word[1] for word in result_words]
-        # similar_to = [word[2] for word in result_words]
-        return result_words
+            with open("./data/Scatterplot.json") as spfile:
+                self.scatterplot = json.load(spfile)
 
     def debias(self, gendered):
         #Find gender direction
@@ -84,25 +48,18 @@ class WordEmbedding:
         
         candidates = []
         for w1, w2 in self.equalize_pairs:
-            if (w1 not in self.model and w1.lower() not in self.model) or (w2 not in self.model and w2.lower() not in self.model):
+            candidates.append((w1.lower(), w2.lower()))
+            candidates.append((w1.upper(), w2.upper()))
+            candidates.append((w1.title(), w2.title()))
+        for w1, w2 in candidates:
+            if (w1 not in self.model) or (w2 not in self.model):
               continue
-            if w1.lower() not in gendered and w1 not in gendered:
-                continue
-            else:
-                if w1.lower() in gendered and w1 not in gendered:
-                    w1 = w1.lower()
-            if w2.lower() not in gendered and w2 not in gendered:
-                continue
-            else:
-                if w2.lower() in gendered and w2 not in gendered:
-                    w2 = w2.lower()
-            mu = (self.model[w1] + self.model[w2])/2
-            muproj = self.project(mu, direction)
-            v = mu - muproj
-            w1proj = self.project(w1, direction)
-            w2proj = self.project(w2, direction)
-            self.model[w1] = v + (np.sqrt((1 - np.linalg.norm(v)**2)) * (w1proj - muproj)/np.linalg.norm(w1proj - muproj))
-            self.model[w2] = v + (np.sqrt((1 - np.linalg.norm(v)**2)) * (w2proj - muproj)/np.linalg.norm(w2proj - muproj))
+            y = self.drop((self.model[w1] + self.model[w2])/2, direction)
+            z = np.sqrt(1 - np.linalg.norm(y)**2)
+            if (self.model[w1] - self.model[w2]).dot(direction) < 0:
+                z = -z
+            self.model[w1] = z * direction + y
+            self.model[w2] = -z * direction + y
 
         self.norm()
         return None
@@ -120,18 +77,19 @@ class WordEmbedding:
             return np.dot(self.model[word], direction) * direction
         else: 
             return np.dot(word, direction) * direction
+    
+    def drop(self, u, v):
+        return u - v * u.dot(v) / v.dot(v)
 
     def findBiasDirection(self):
         toFit = []
         for w1, w2 in self.definition_pairs:
             if w1.lower() not in self.model and w1 not in self.model:
-                print("PROBLEM:", w1)
                 continue
             else:
                 if w1.lower() in self.model and w1 not in self.model:
                     w1 = w1.lower()
             if w2.lower() not in self.model and w2 not in self.model:
-                print("PROBLEM:", w2)
                 continue
             else:
                 if w2.lower() in self.model and w2 not in self.model:
@@ -144,30 +102,20 @@ class WordEmbedding:
         toFit = np.array(toFit)
         pca = PCA(10)
         pca.fit(toFit)
-        return pca.components_[0]   
-
-def main():
-    # we = WordEmbedding(fp)
-    # # print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    # # print("Man + doctor:", we.model.distance("man", "doctor"))
-    # # print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    # # print("Man + nurse:", we.model.distance("man", "nurse"))
-    # # print("Man + boy:", we.model.distance("man", "actor"))
-    # # print("Woman + boy:", we.model.distance("woman", "actress"))
-
-    # specific = open("data/gender_specific_seed_words.json")
-    # specificwords = json.load(specific)
-    # specificwords = [word.lower() for word in specificwords]
-    # we.debias(specificwords)
-    
-    # print("NEUTRALIZED")
-    # print("Woman + doctor:", we.model.distance("woman", "doctor"))
-    # print("Man + doctor:", we.model.distance("man", "doctor"))
-    # print("Woman + nurse:", we.model.distance("woman", "nurse"))
-    # print("Man + nurse:", we.model.distance("man", "nurse"))
-    # print("Man + boy:", we.model.distance("man", "actor"))
-    # print("Woman + boy:", we.model.distance("woman", "actress"))
-    # print("Done")
-    
+        return pca.components_[0]
         
-    main()
+    def doPCA(self, definition_pairs):
+        toFit = []
+        for w1, w2 in definition_pairs:
+            if w1 not in self.model.key_to_index or w2 not in self.model.key_to_index:
+                continue
+            #Find average between two vector pairs such as (man, woman) or (he, she)
+            average = (self.model[w1] + self.model[w2])/2
+            #Add the difference between the average of both vectors to list of vectors to do PCA with
+            toFit.append(self.normOne(self.model[w1] - average))
+            toFit.append(self.normOne(self.model[w2] - average))
+
+        toFit = np.array(toFit)
+        pca = PCA(n_components=10)
+        pca.fit(toFit)
+        return pca

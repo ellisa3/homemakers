@@ -22,8 +22,8 @@ class GenerateAnalogies:
         
     #returns the cosine similarity between a and b, she,he = 0.612995028496, 0.612995028496
     def findSeedSimilarity(self):
-        a = "she"
-        b = "he"
+        a = "he"
+        b = "she"
         self.seedDirection = self.model[a] - self.model[b]
         #print("he/she: " , self.seedDirection)
         #print("she/he: ", self.model[b] - self.model[a])
@@ -63,23 +63,24 @@ def main():
     ga.findSeedSimilarity()
 
     #create analogies using word embedding without debiasing
-    # start = time.time()
-    # analogies = ga.generateAnalogies()
-    # end = time.time()
-    # print("analogies before:" + str(end - start))
-    # i = 0
-    # # print(analogies[i])
-    # f = open('data/before_analogies', 'w')
-    # i = 0
-    # for analogy in analogies:
-    #   #print(analogy)
-    #   f.write(' '.join(analogy))
-    #   f.write("\n")
-    # f.close()
+    start = time.time()
+    analogies = ga.generateAnalogies()
+    end = time.time()
+    print("analogies before:" + str(end - start))
+    i = 0
+    # print(analogies[i])
+    f = open('data/before_analogies', 'w')
+    i = 0
+    for analogy in analogies:
+      #print(analogy)
+      f.write(' '.join(analogy))
+      f.write("\n")
+    f.close()
     #run debiasing on the word embedding
 
     start = time.time()
-    gender_neutral = set(line.strip() for line in open('/content/homemakers/data/Ogn_predict.txt'))
+    fp = open('/content/homemakers/data/gender_specific_full.json')
+    gender_neutral = json.load(fp)
     end = time.time()
     print("svm: " + str(end - start))
 
@@ -94,7 +95,7 @@ def main():
     print("analogies after:" + str(end - start))
     i = 0
     # print(analogies[i])
-    f = open('data/after_analogies.txt', 'w')
+    f = open('data/he_she_after_analogies.txt', 'w')
     i = 0
     for analogy in analogies:
       #print(analogy)
