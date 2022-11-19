@@ -18,13 +18,11 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
     elif words == None:
         words = [ word for word in we.model.key_to_index ]
     
-    # print(words)
     word_vectors = np.array([we.model[w] for w in words])
 
     
     gender_subspace = we.doPCA(we.definition_pairs).transform(word_vectors)[:,:2] #x dimension in the gender bias direction (.compintnts)
 
-    # print(gender_subspace)
     data = []
     count = 0
 
@@ -33,7 +31,6 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
                     x = rand_jitter(gender_subspace[count:,0]), 
                     y = rand_jitter(gender_subspace[count:,1]),  
                     text = words[count:],
-                    # name = 'input words',
                     textposition = "middle center",
                     textfont_size = 30,
                     mode = 'text',
@@ -67,26 +64,10 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
     data.append(trace_inputz)
     data.append(he_she)   
 
-    # # creating a dataframe from the results
-    # # df = pd.DataFrame(gender_subspace, columns=word_vectors)
-    # # adding a columns for the corresponding words
-    # # df['Words'] = words
-    # # plotting a scatter plot
-    # fig = px.scatter(
-    #                 x = gender_subspace[count:,0]), 
-    #                 y = gender_subspace[count:,1],     
-    #                 log_x=True, log_y=True, orientation='h', size_max=30, text = words
-    #                 )
-    # fig.show()
-    
-    # Configure the layout
-
     layout = go.Layout(
         margin = {'l': 50, 'r': 50, 'b':50, 't': 50},
         showlegend=False,
-        # legend=dict(x=1,y=0.5,font=dict(family="Courier New",size=25,color="black")),
         font = dict(
-            # color = "black",
             family = " PT Sans Narrow ",
             size = 15),
         autosize = False,
@@ -99,8 +80,7 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
 
 
     plot_figure = go.Figure(data = data, layout = layout)
-    # plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
-    plot_figure.show()
+    plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
 
 
 input_words=[]
@@ -114,7 +94,7 @@ for word in embedding.scatterplot:
         numwords+=1
 print(numwords)
 
-with open("./data/genderedPaper.json") as gpfile: # Currently not working 
+with open("./data/genderedPaper.json") as gpfile:
     gendered_paper = json.load(gpfile)
     embedding.debias(gendered_paper)
 
