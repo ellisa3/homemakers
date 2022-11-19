@@ -11,18 +11,21 @@ import json
 
 class WordEmbedding:
 
-    def __init__(self, fp=None, isLinearSVM=False):
+    def __init__(self, fp=None, isLinearSVM=False, we_subset_list=None, we_vector_list = None):
         if fp == None:
             print(isLinearSVM)
             if isLinearSVM:
                 model = api.load('word2vec-google-news-300')
                 self.model = model
+            elif we_subset_list:
+              self.model = KeyedVectors(300, 27000)
+              self.model.add_vectors(we_subset_list, we_vector_list)
             else:
                 model = api.load('word2vec-google-news-300')
                 self.model = model.wv
         else:
             glove_file = datapath(fp)
-            word2vec_glove_file = get_tmpfile("w2v_gnews_small.txt") 
+            word2vec_glove_file = get_tmpfile("w2v_paper.txt") 
             glove2word2vec(glove_file, word2vec_glove_file) 
             self.model = KeyedVectors.load_word2vec_format(word2vec_glove_file, binary=False)
             with open("./data/definition_pairs.json") as dpfile:

@@ -1,5 +1,4 @@
 .history
 config.py
 /.DS_Store
-.DS_Store
-/Users/darrylyork3/Desktop/Comps22/homemakers/data/Scatterplot.json
+__pycache__/
