@@ -80,8 +80,8 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
 
 
     plot_figure = go.Figure(data = data, layout = layout)
-    plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
-
+    # plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
+    plot_figure.show()
 
 input_words=[]
 embedding = we.WordEmbedding('/Users/darrylyork3/Desktop/Comps22/homemakers/data/w2v_gnews_small.txt')
