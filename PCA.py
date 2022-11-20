@@ -12,8 +12,6 @@ embedding = we.WordEmbedding(fp)
 
 input_words = [('she','he'),('her','his'),('woman','man'),  ('herself', 'himself'), ('daughter', 'son'), ('mother', 'father'), ('gal','guy'),('girl','boy'),('female','male'), ("Mary", "John")] #Ten gendered pairs from figure 5 ('mary', 'john') removed bc not in our dataset,
 
-
-
 pca = embedding.doPCA(input_words)
 
 
