@@ -50,7 +50,7 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
     he_she = go.Scatter(
                         x = np.array([-.35, .35]),
                         y = np.array([-.004,-.004]),
-                        text = ["he", "she"],
+                        text = ["she", "he"],
                         textposition = "middle center",
                         textfont_size = 40,
                         mode = 'text',
@@ -78,29 +78,29 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
         width = 1800,
         height = 1000,
         plot_bgcolor= 'rgb(255,255,255)',
-        xaxis=go.layout.XAxis(showgrid=False, zeroline=True, zerolinecolor='red', zerolinewidth=2, showticklabels=False, showline=False, griddash="longdash"),
+        xaxis=go.layout.XAxis(showgrid=False, zeroline=True, zerolinecolor='red', zerolinewidth=2, showticklabels=False, showline=False),
         yaxis=go.layout.YAxis(showgrid=False, zeroline=True, zerolinecolor='red', zerolinewidth=2, showticklabels=False, showline=False)
     ) 
 
 
     plot_figure = go.Figure(data = data, layout = layout)
-    plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
+    plot_figure.write_image("/content/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
     # plot_figure.show()
 
 input_words=[]
-embedding = we.WordEmbedding('/Users/darrylyork3/Desktop/Comps22/homemakers/data/w2v_gnews_small.txt')
+embedding = we.WordEmbedding('/content/homemakers/data/w2v_gnews_small.txt')
 
 numwords=0
 for word in embedding.scatterplot:
-    print(word)
+
     if word in embedding.model.key_to_index: 
         input_words.append(word)
         numwords+=1
-print(numwords)
+
 
 # Uncomment this for debiased visual
-with open("./data/genderedPaper.json") as gpfile:
-    gendered_paper = json.load(gpfile)
-    embedding.debias(gendered_paper)
+# with open("/content/homemakers/data/genderedPaper.json") as gpfile:
+#     gendered_paper = json.load(gpfile)
+#     embedding.debias(gendered_paper)
 
 display_pca_scatterplot_2D(embedding, words=input_words)
