@@ -84,7 +84,7 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
 
 
     plot_figure = go.Figure(data = data, layout = layout)
-    plot_figure.write_image("/content/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
+    plot_figure.write_image("/content/homemakers/visualizations/DebiasScatterplot.svg", format="svg")
     # plot_figure.show()
 
 input_words=[]
