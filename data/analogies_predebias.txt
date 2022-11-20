@@ -1,10 +1,3 @@
-appropriately thoughtfully 9.818665e-05
-unwanted unwelcome 8.363321e-05
-vengeance murderous 6.342138e-05
-helpful informative 4.9224956e-05
-bend bends 3.703218e-05
-grant grants 3.6192185e-05
-mightily immensely 2.5779183e-05
 he she 0.7740097
 his her 0.6815156
 himself herself 0.65023255
@@ -22442,6 +22435,13 @@ removable waterproof 0.00013350105
 healthcare health 0.00013327776
 beginner beginners 0.00011674181
 registered_nurse homemaker 0.000103260914
+appropriately thoughtfully 9.818665e-05
+unwanted unwelcome 8.363321e-05
+vengeance murderous 6.342138e-05
+helpful informative 4.9224956e-05
+bend bends 3.703218e-05
+grant grants 3.6192185e-05
+mightily immensely 2.5779183e-05
 in in 0
 for in 0
 with in 0
