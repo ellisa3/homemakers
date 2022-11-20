@@ -3,6 +3,7 @@ import numpy as np
 import wordembedding
 import json
 import time
+import linearsvm
 
 def data_load():
   global we 
@@ -73,8 +74,10 @@ def main():
       f.write("\n")
     f.close()
 
-    #create a list of gender neutral words
-    fp = open('/content/homemakers/data/gender_specific_full.json') # !!! @ ALDO & AISHWARYA
+    svm = linearsvm.LinearSVM()
+    svm.generate_gender_specific_words()
+    start = time.time()
+    fp = open('/content/homemakers/data/gender_specific_full.json')
     gender_neutral = json.load(fp)
 
     #debias the word embedding
