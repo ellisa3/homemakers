@@ -16,6 +16,8 @@ class GenerateAnalogies:
         self.seedDirection = 0
         self.we = we
         self.model = we.model
+        self.GS = set()
+        self.GN = set()
 
     def getScore(analogy):  #<< i feel like we can delete this, anyone use this?
         return analogy[2]
@@ -28,6 +30,12 @@ class GenerateAnalogies:
         self.seedDirection = self.model[a] - self.model[b]
 
         return self.seedDirection
+
+    def generateGenderNeutralWords(self, gender_specific_fp):
+        self.GS = list(set(line.strip() for line in open(gender_specific_fp)))
+        for w in we.model.index_to_key:
+            if w not in self.GS:
+                self.GN.add(w)
 
     #returns an array of analogies generated from the word embedding
     def generateAnalogies(self):        
@@ -75,13 +83,11 @@ def main():
     f.close()
 
     svm = linearsvm.LinearSVM()
-    svm.generate_gender_specific_words()
-    start = time.time()
-    fp = open('/content/homemakers/data/gender_specific_full.json')
-    gender_neutral = json.load(fp)
+    svm.generateGenderSpecificWords()
+    ga.generateGenderNeutralWords("./data/our_GS_words.txt")
 
     #debias the word embedding
-    ga.we.debias(gender_neutral)
+    ga.we.debias(ga.GN)
 
     #create analogies using the debiased word embedding
     analogies = ga.generateAnalogies()

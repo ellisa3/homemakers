@@ -5,7 +5,7 @@ import wordembedding
 
 class LinearSVM:
 
-  def generate_gender_specific_words(self):
+  def generateGenderSpecificWords(self):
     GENDER_SEED_INFILE = '/content/homemakers/data/gender_seed.json'
     GS_OUTFILE = '/content/homemakers/data/our_GS_words.txt'
     GN_OUTFILE = '/content/homemakers/data/ours_GN_words.txt'
