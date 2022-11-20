@@ -7,6 +7,10 @@ from sklearn.decomposition import PCA
 import wordembedding as we
 import json
 
+### A visualization of the word embedding projected onto the gender direction
+### Missing the linear svm data to project gender neutrality along the y-axis
+### Allows for debiased embedding visualization 
+
 def rand_jitter(arr):
     stdev = .01 * (max(arr) - min(arr))
     return arr + (np.random.randn(len(arr)) * stdev)
@@ -80,8 +84,8 @@ def display_pca_scatterplot_2D(we, words=None, sample=20):
 
 
     plot_figure = go.Figure(data = data, layout = layout)
-    # plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
-    plot_figure.show()
+    plot_figure.write_image("/Users/darrylyork3/Desktop/Comps22/homemakers/visualizations/GenderDirectionScatterplot.svg", format="svg")
+    # plot_figure.show()
 
 input_words=[]
 embedding = we.WordEmbedding('/Users/darrylyork3/Desktop/Comps22/homemakers/data/w2v_gnews_small.txt')
@@ -94,6 +98,7 @@ for word in embedding.scatterplot:
         numwords+=1
 print(numwords)
 
+# Uncomment this for debiased visual
 with open("./data/genderedPaper.json") as gpfile:
     gendered_paper = json.load(gpfile)
     embedding.debias(gendered_paper)
